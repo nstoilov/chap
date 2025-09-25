@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 
-// Replace this with your actual API key
-const OPENAI_API_KEY = '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';
+// Get API key from environment variable
+const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY || 'your_api_key_here';
 
 const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
