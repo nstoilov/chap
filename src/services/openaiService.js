@@ -1,18 +1,11 @@
 import OpenAI from 'openai';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { OPENAI_API_KEY } from '@env';
 
-const API_KEY_STORAGE = 'openai_api_key';
+const openai = new OpenAI({
+  apiKey: OPENAI_API_KEY,
+});
 
 export const translateWithBreakdown = async (japaneseText) => {
-  // Get API key from storage
-  const apiKey = await AsyncStorage.getItem(API_KEY_STORAGE);
-  if (!apiKey) {
-    throw new Error('OpenAI API key not found. Please configure your API key in settings.');
-  }
-
-  const openai = new OpenAI({
-    apiKey: apiKey,
-  });
   try {
     const prompt = `Please analyze this Japanese text and provide:
 1. English translation

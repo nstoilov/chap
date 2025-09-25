@@ -20,17 +20,14 @@ A React Native Expo app that uses ChatGPT to translate Japanese text to English 
    npm install
    ```
 
-2. **Get OpenAI API Key**
-   - Visit [OpenAI Platform](https://platform.openai.com/api-keys)
-   - Create a new API key
-   - Copy the key (starts with `sk-`)
+2. **Configure OpenAI API Key**
+   - Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
+   - Add it to the `.env` file:
+     ```
+     OPENAI_API_KEY=your_api_key_here
+     ```
 
-3. **Configure API Key**
-   - Launch the app
-   - On first run, you'll see the API configuration screen
-   - Paste your OpenAI API key and save
-
-4. **Run the App**
+3. **Run the App**
    ```bash
    npx expo start
    ```
@@ -39,9 +36,10 @@ A React Native Expo app that uses ChatGPT to translate Japanese text to English 
 
 ## How to Use
 
-1. **Enter Japanese Text**: Paste or type Japanese text in the input field
-2. **Translate**: Tap "Translate & Analyze" button
-3. **View Results**: See translation, word breakdown with furigana, and grammar explanations
+1. **Start the App**: Run `npx expo start` and scan the QR code
+2. **Enter Japanese Text**: Paste or type Japanese text in the input field
+3. **Translate**: Tap "Translate & Analyze" button
+4. **View Results**: See translation, word breakdown with furigana, and grammar explanations
 
 ## Example
 
