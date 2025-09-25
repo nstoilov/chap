@@ -1,55 +1,25 @@
 import OpenAI from 'openai';
 
-// Get API key from environment variable
-const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY || 'your_api_key_here';
-
-const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
-});
-
+// This will now be handled by the serverless function
 export const translateWithBreakdown = async (japaneseText) => {
   try {
-    const prompt = `Please analyze this Japanese text and provide:
-1. English translation
-2. Word-by-word breakdown with readings (furigana) in parentheses
-3. Grammar explanations for complex structures
-
-Japanese text: "${japaneseText}"
-
-Please format your response as JSON with the following structure:
-{
-  "translation": "English translation here",
-  "breakdown": [
-    {
-      "word": "Japanese word",
-      "reading": "hiragana reading",
-      "meaning": "English meaning",
-      "type": "part of speech"
-    }
-  ],
-  "grammar": "Grammar explanations"
-}`;
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: "You are a Japanese language expert. Always respond with valid JSON format."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      max_tokens: 1500,
-      temperature: 0.3
+    // Call our serverless function instead of OpenAI directly
+    const response = await fetch('/api/translate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ text: japaneseText }),
     });
 
-    const result = JSON.parse(response.choices[0].message.content);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
     return result;
   } catch (error) {
-    console.error('OpenAI API Error:', error);
-    throw new Error('Failed to translate text. Please check your API key and try again.');
+    console.error('Translation API Error:', error);
+    throw new Error('Failed to translate text. Please try again.');
   }
 };
