@@ -1,5 +1,7 @@
 import OpenAI from 'openai';
-import { OPENAI_API_KEY } from '@env';
+
+// Replace this with your actual API key
+const OPENAI_API_KEY = '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';
 
 const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
