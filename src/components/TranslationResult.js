@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
   },
   japaneseWord: {
     fontSize: 18,
-    fontWeight: 'bold',
     color: '#1565C0',
   },
   reading: {
