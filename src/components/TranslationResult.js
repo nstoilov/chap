@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
 
-export const TranslationResult = ({ result }) => {
+export const TranslationResult = ({ result, onWordClick, isLoading }) => {
   if (!result) return null;
 
   return (
@@ -22,15 +22,34 @@ export const TranslationResult = ({ result }) => {
         <Card.Content>
           <Title>Word Breakdown</Title>
           {result.breakdown?.map((item, index) => (
-            <View key={index} style={styles.breakdownItem}>
+            <TouchableOpacity 
+              key={index} 
+              style={styles.breakdownItem}
+              onPress={() => onWordClick(item.word)}
+              disabled={isLoading}
+            >
               <View style={styles.wordContainer}>
-                <Text style={styles.japaneseWord}>{item.word}</Text>
-                <Text style={styles.reading}>({item.reading})</Text>
+                <Text style={[
+                  styles.japaneseWord,
+                  isLoading && styles.disabled
+                ]}>
+                  {item.word}
+                </Text>
+                <Text style={[
+                  styles.reading,
+                  isLoading && styles.disabled
+                ]}>
+                  ({item.reading})
+                </Text>
               </View>
-              <Text style={styles.meaning}>
+              <Text style={[
+                styles.meaning,
+                isLoading && styles.disabled
+              ]}>
                 {item.meaning} - <Text style={styles.partOfSpeech}>{item.type}</Text>
               </Text>
-            </View>
+              <Text style={styles.clickHint}>👆 Tap to translate this word</Text>
+            </TouchableOpacity>
           ))}
         </Card.Content>
       </Card>
@@ -64,9 +83,13 @@ const styles = StyleSheet.create({
   },
   breakdownItem: {
     marginBottom: 12,
-    paddingBottom: 8,
+    paddingBottom: 12,
+    paddingTop: 8,
+    paddingHorizontal: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
+    borderRadius: 8,
+    backgroundColor: '#F8F9FA',
   },
   wordContainer: {
     flexDirection: 'row',
@@ -86,9 +109,18 @@ const styles = StyleSheet.create({
   meaning: {
     fontSize: 14,
     color: '#424242',
+    marginBottom: 4,
   },
   partOfSpeech: {
     fontStyle: 'italic',
     color: '#9E9E9E',
+  },
+  clickHint: {
+    fontSize: 12,
+    color: '#666',
+    fontStyle: 'italic',
+  },
+  disabled: {
+    opacity: 0.5,
   },
 });

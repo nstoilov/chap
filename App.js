@@ -24,6 +24,28 @@ export default function App() {
     try {
       const translationResult = await translateWithBreakdown(text);
       setResult(translationResult);
+      // Clear the input box after successful translation
+      setText('');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleWordClick = async (word) => {
+    // Set the clicked word in the input
+    setText(word);
+    setError('');
+    setResult(null);
+    setIsLoading(true);
+
+    try {
+      // Automatically translate the clicked word
+      const translationResult = await translateWithBreakdown(word);
+      setResult(translationResult);
+      // Clear the input after translation
+      setText('');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -56,7 +78,11 @@ export default function App() {
               error={error}
             />
             
-            <TranslationResult result={result} />
+            <TranslationResult 
+              result={result} 
+              onWordClick={handleWordClick}
+              isLoading={isLoading}
+            />
           </ScrollView>
           
           <StatusBar style="auto" />
