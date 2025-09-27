@@ -73,3 +73,7 @@ A React Native Expo app that uses ChatGPT to translate Japanese text to English 
 ## License
 
 MIT License
+
+export build
+npx expo export --platform web   
+npx vercel --prod --archive=tgz  
