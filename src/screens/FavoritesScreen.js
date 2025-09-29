@@ -11,7 +11,9 @@ export const FavoritesScreen = () => {
   const [loading, setLoading] = useState(true);
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [editingFavorite, setEditingFavorite] = useState(null);
+  const [favoriteToRemove, setFavoriteToRemove] = useState(null);
   const [editForm, setEditForm] = useState({
     word: '',
     reading: '',
@@ -41,13 +43,27 @@ export const FavoritesScreen = () => {
     }
   };
 
-  const handleRemoveFavorite = async (favoriteId) => {
+  const handleRemoveFavorite = (favorite) => {
+    setFavoriteToRemove(favorite);
+    setShowRemoveDialog(true);
+  };
+
+  const confirmRemoveFavorite = async () => {
+    if (!favoriteToRemove) return;
+    
     try {
-      const updatedFavorites = await favoritesService.removeFavorite(favoriteId);
+      const updatedFavorites = await favoritesService.removeFavorite(favoriteToRemove.id);
       setFavorites(updatedFavorites);
+      setShowRemoveDialog(false);
+      setFavoriteToRemove(null);
     } catch (error) {
       console.error('Error removing favorite:', error);
     }
+  };
+
+  const cancelRemoveFavorite = () => {
+    setShowRemoveDialog(false);
+    setFavoriteToRemove(null);
   };
 
   const handleClearAll = async () => {
@@ -182,7 +198,7 @@ export const FavoritesScreen = () => {
                   
                   <TouchableOpacity 
                     style={styles.removeButton}
-                    onPress={() => handleRemoveFavorite(favorite.id)}
+                    onPress={() => handleRemoveFavorite(favorite)}
                   >
                     <Ionicons 
                       name="trash-outline" 
@@ -199,7 +215,7 @@ export const FavoritesScreen = () => {
       </ScrollView>
 
       <Portal>
-        <Dialog visible={showClearDialog} onDismiss={() => setShowClearDialog(false)}>
+        <Dialog visible={showClearDialog} onDismiss={() => setShowClearDialog(false)} style={styles.dialog}>
           <Dialog.Title>Clear All Favorites</Dialog.Title>
           <Dialog.Content>
             <Paragraph>
@@ -217,7 +233,7 @@ export const FavoritesScreen = () => {
           </Dialog.Actions>
         </Dialog>
 
-        <Dialog visible={showEditDialog} onDismiss={handleCancelEdit}>
+        <Dialog visible={showEditDialog} onDismiss={handleCancelEdit} style={styles.dialog}>
           <Dialog.Title>Edit Favorite</Dialog.Title>
           <Dialog.Content>
             <TextInput
@@ -250,6 +266,24 @@ export const FavoritesScreen = () => {
               labelStyle={{ color: '#2196F3' }}
             >
               Save
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+
+        <Dialog visible={showRemoveDialog} onDismiss={cancelRemoveFavorite} style={styles.dialog}>
+          <Dialog.Title>Remove Favorite</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>
+              Are you sure you want to remove "{favoriteToRemove?.word}" from your favorites?
+            </Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={cancelRemoveFavorite}>Cancel</Button>
+            <Button 
+              onPress={confirmRemoveFavorite}
+              labelStyle={{ color: '#E91E63' }}
+            >
+              Remove
             </Button>
           </Dialog.Actions>
         </Dialog>
@@ -369,5 +403,11 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     height: 20,
+  },
+  dialog: {
+    width: '40%',
+    minWidth: 300,
+    maxWidth: 500,
+    alignSelf: 'center',
   },
 });

@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 const FAVORITES_KEY = 'japanese_translator_favorites';
+const SHOW_TEST_WORD = false;
 
 // For web, we'll use localStorage as fallback
 const storage = {
@@ -48,7 +49,23 @@ export const favoritesService = {
   async getFavorites() {
     try {
       const favoritesJson = await storage.getItem(FAVORITES_KEY);
-      return favoritesJson ? JSON.parse(favoritesJson) : [];
+      const favorites = favoritesJson ? JSON.parse(favoritesJson) : [];
+      
+      // Add a test favorite if list is empty and flag is enabled
+      if (SHOW_TEST_WORD && favorites.length === 0) {
+        const testFavorite = {
+          id: Date.now().toString(),
+          word: "こんにちは",
+          reading: "konnichiwa",
+          meaning: "hello",
+          type: "greeting",
+          dateAdded: new Date().toISOString(),
+        };
+        favorites.push(testFavorite);
+        await storage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+      }
+      
+      return favorites;
     } catch (error) {
       console.error('Error getting favorites:', error);
       return [];
