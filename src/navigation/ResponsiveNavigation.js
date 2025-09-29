@@ -25,18 +25,33 @@ const getIconName = (routeName, focused) => {
   }
 };
 
-const SidebarItem = ({ name, isActive, onPress }) => (
-  <TouchableOpacity 
-    style={[styles.sidebarItem, isActive && styles.sidebarItemActive]} 
-    onPress={onPress}
-  >
-    <Ionicons 
-      name={getIconName(name, isActive)} 
-      size={28} 
-      color={isActive ? '#2196F3' : '#666'} 
-    />
-  </TouchableOpacity>
-);
+const SidebarItem = ({ name, isActive, onPress }) => {
+  const getIconColor = (iconName, active) => {
+    if (active && iconName === 'Home') {
+      return '#F4A460'; // Shiba Inu yellow-orange color
+    }
+    if (active && iconName === 'Favorites') {
+      return '#E91E63'; // Red for heart
+    }
+    if (active && iconName === 'Game') {
+      return '#000000'; // Black for game controller
+    }
+    return active ? '#2196F3' : '#666';
+  };
+
+  return (
+    <TouchableOpacity 
+      style={[styles.sidebarItem, isActive && styles.sidebarItemActive]} 
+      onPress={onPress}
+    >
+      <Ionicons 
+        name={getIconName(name, isActive)} 
+        size={28} 
+        color={getIconColor(name, isActive)} 
+      />
+    </TouchableOpacity>
+  );
+};
 
 const Sidebar = ({ activeScreen, onScreenChange }) => (
   <View style={styles.sidebar}>
@@ -80,7 +95,9 @@ const DesktopLayout = () => {
     <View style={styles.container}>
       <Sidebar activeScreen={activeScreen} onScreenChange={setActiveScreen} />
       <View style={styles.content}>
-        {renderScreen()}
+        <View style={styles.contentWrapper}>
+          {renderScreen()}
+        </View>
       </View>
     </View>
   );
@@ -91,7 +108,20 @@ const MobileNavigator = () => (
     screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         const iconName = getIconName(route.name, focused);
-        return <Ionicons name={iconName} size={size} color={color} />;
+        let iconColor = color;
+        
+        // Use custom colors for each tab when focused
+        if (focused && route.name === 'Home') {
+          iconColor = '#F4A460'; // Shiba Inu yellow-orange
+        } else if (focused && route.name === 'Favorites') {
+          iconColor = '#E91E63'; // Red for heart
+        } else if (focused && route.name === 'Game') {
+          iconColor = '#000000'; // Black for game controller
+        } else if (focused) {
+          iconColor = '#2196F3';
+        }
+        
+        return <Ionicons name={iconName} size={size} color={iconColor} />;
       },
       tabBarActiveTintColor: '#2196F3',
       tabBarInactiveTintColor: 'gray',
@@ -158,5 +188,19 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  contentWrapper: {
+    width: '33.33%',
+    minWidth: 400,
+    maxWidth: 600,
+    flex: 1,
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
 });

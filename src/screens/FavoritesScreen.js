@@ -182,9 +182,9 @@ export const FavoritesScreen = () => {
                     onPress={() => handleRemoveFavorite(favorite.id)}
                   >
                     <Ionicons 
-                      name="heart" 
+                      name="trash-outline" 
                       size={24} 
-                      color="#E91E63" 
+                      color="#999999" 
                     />
                   </TouchableOpacity>
                 </View>
