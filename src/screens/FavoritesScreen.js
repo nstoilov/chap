@@ -119,10 +119,13 @@ export const FavoritesScreen = () => {
   if (favorites.length === 0) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.centerContent}>
+        <View style={styles.header}>
+          <Title style={styles.title}>❤️ Favorites (0)</Title>
+        </View>
+        
+        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
           <Card style={styles.card}>
             <Card.Content>
-              <Title style={styles.title}>❤️ Favorites</Title>
               <Paragraph style={styles.description}>
                 Save your favorite translations and words here for quick access.
               </Paragraph>
@@ -131,7 +134,7 @@ export const FavoritesScreen = () => {
               </Paragraph>
             </Card.Content>
           </Card>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -342,6 +345,9 @@ const styles = StyleSheet.create({
   title: {
     color: '#E91E63',
     fontSize: 20,
+    fontFamily: 'System',
+    fontWeight: '600',
+    letterSpacing: -0.5,
   },
   description: {
     textAlign: 'center',

@@ -93,11 +93,13 @@ const DesktopLayout = () => {
 
   return (
     <View style={styles.container}>
-      <Sidebar activeScreen={activeScreen} onScreenChange={setActiveScreen} />
       <View style={styles.content}>
         <View style={styles.contentWrapper}>
           {renderScreen()}
         </View>
+      </View>
+      <View style={styles.sidebarContainer}>
+        <Sidebar activeScreen={activeScreen} onScreenChange={setActiveScreen} />
       </View>
     </View>
   );
@@ -160,25 +162,34 @@ export const ResponsiveNavigation = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
+    position: 'relative',
+  },
+  sidebarContainer: {
+    position: 'absolute',
+    left: 20,
+    top: '50%',
+    transform: [{ translateY: -90 }], // Adjust based on sidebar height
+    zIndex: 1000,
   },
   sidebar: {
-    width: 80,
     backgroundColor: '#f8f9fa',
-    borderRightWidth: 1,
-    borderRightColor: '#e0e0e0',
+    borderRadius: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 8,
   },
   sidebarNav: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20,
+    gap: 10,
   },
   sidebarItem: {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 15,
-    marginVertical: 10,
     borderRadius: 12,
     width: 50,
     height: 50,
@@ -189,18 +200,23 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f0f0f0', // Light grey between eaeaea and f5f5f5
+    paddingLeft: 0, // Remove left padding since sidebar is floating
+    paddingTop: 20, // Add top padding to show rounded corners
   },
   contentWrapper: {
-    width: '33.33%',
+    width: '60%',
     minWidth: 400,
     maxWidth: 600,
     flex: 1,
+    marginTop: 20, // Add top margin to show rounded corners
     backgroundColor: '#ffffff',
+    borderRadius: 20, // Use generic borderRadius for better compatibility
+    overflow: 'hidden', // Ensure content doesn't overflow rounded corners
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 8,
   },
 });

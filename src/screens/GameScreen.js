@@ -370,6 +370,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#9C27B0',
     fontSize: 24,
+    fontFamily: 'System',
+    fontWeight: '600',
+    letterSpacing: -0.5,
   },
   description: {
     textAlign: 'center',
@@ -386,6 +389,9 @@ const styles = StyleSheet.create({
     color: '#FF9800',
     fontSize: 18,
     marginBottom: 12,
+    fontFamily: 'System',
+    fontWeight: '600',
+    letterSpacing: -0.3,
   },
   scoresContainer: {
     flexDirection: 'row',
@@ -518,6 +524,9 @@ const styles = StyleSheet.create({
     color: '#2E7D32',
     fontSize: 18,
     marginBottom: 16,
+    fontFamily: 'System',
+    fontWeight: '600',
+    letterSpacing: -0.3,
   },
   japaneseWord: {
     textAlign: 'center',
@@ -605,6 +614,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 24,
     marginBottom: 8,
+    fontFamily: 'System',
+    fontWeight: '600',
+    letterSpacing: -0.5,
   },
   newHighScore: {
     fontSize: 16,
