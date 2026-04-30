@@ -1,7 +1,7 @@
 // API configuration for different platforms
 export const API_CONFIG = {
-  // Replace with your actual Vercel deployment URL
-  PRODUCTION_API_URL: 'https://chap-three.vercel.app/', // Updated to match your GitHub username
+  // Stable project alias - doesn't change between deployments
+  PRODUCTION_API_URL: 'https://chap-nstoilovs-projects.vercel.app',
   
   // Check if we're running in a browser (web) or mobile
   getBaseUrl: () => {
