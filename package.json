@@ -7,8 +7,11 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "build:web": "expo export --platform web",
-    "build": "expo export --platform web"
+    "build:web": "expo export --platform web --output-dir dist",
+    "build": "expo export --platform web --output-dir dist",
+    "electron": "npm run build:web && node electron/fix-paths.js && npx electron electron/main.js",
+    "electron:dev": "electron electron/main.js",
+    "dist:mac": "npm run build:web && electron-builder --mac"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -30,7 +33,27 @@
     "react-native-web": "^0.21.0"
   },
   "private": true,
+  "build": {
+    "appId": "com.chap.app",
+    "productName": "Chap",
+    "extraMetadata": {
+      "main": "electron/main.js"
+    },
+    "directories": {
+      "output": "electron-dist"
+    },
+    "files": [
+      "electron/**/*",
+      "dist/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.education",
+      "target": "dmg"
+    }
+  },
   "devDependencies": {
-    "babel-preset-expo": "^54.0.3"
+    "babel-preset-expo": "^54.0.3",
+    "electron": "^41.3.0",
+    "electron-builder": "^26.8.1"
   }
 }

@@ -1,0 +1,3 @@
+mkdir apk_files
+unzip build-1758804032530.apks -d apk_files/
+ls apk_files/
