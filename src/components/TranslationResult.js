@@ -1,10 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Card, Title, Paragraph, Button } from 'react-native-paper';
+import { Card, Title, Paragraph, Button, ActivityIndicator } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { favoritesService } from '../services/favoritesService';
 
-export const TranslationResult = ({ result, originalText, onWordClick, onNewTranslation, isLoading }) => {
+// Parse as much as possible from a partial/streaming JSON string
+function parseStreamingResult(text) {
+  const parsed = { translation: null, breakdown: [] };
+  if (!text) return parsed;
+
+  // Extract translation value (complete string only)
+  const transMatch = text.match(/"translation"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  if (transMatch) parsed.translation = transMatch[1];
+
+  // Extract complete breakdown items
+  const breakdownStart = text.indexOf('"breakdown"');
+  if (breakdownStart !== -1) {
+    const afterBreakdown = text.slice(breakdownStart);
+    const itemRegex = /\{[^{}]*\}/g;
+    let m;
+    while ((m = itemRegex.exec(afterBreakdown)) !== null) {
+      try {
+        const item = JSON.parse(m[0]);
+        if (item.word) parsed.breakdown.push(item);
+      } catch {}
+    }
+  }
+
+  return parsed;
+}
+
+export const TranslationResult = ({ result, originalText, onWordClick, onNewTranslation, isLoading, streamingText }) => {
   const [favoriteStates, setFavoriteStates] = useState({});
 
   useEffect(() => {
@@ -45,7 +71,60 @@ export const TranslationResult = ({ result, originalText, onWordClick, onNewTran
     }));
   };
 
-  if (!result) return null;
+  if (!result && !streamingText) return null;
+
+  // While streaming, parse partial JSON and show cards progressively
+  if (!result && streamingText) {
+    const partial = parseStreamingResult(streamingText);
+    return (
+      <View style={styles.container}>
+        {/* Streaming Translation Card */}
+        <Card style={styles.card}>
+          <Card.Content>
+            <View style={styles.streamingHeader}>
+              <ActivityIndicator size="small" style={styles.streamingSpinner} />
+              <Title>Translation</Title>
+            </View>
+            {partial.translation ? (
+              <Paragraph style={styles.translationText}>{partial.translation}</Paragraph>
+            ) : (
+              <Paragraph style={styles.streamingPlaceholder}>…</Paragraph>
+            )}
+          </Card.Content>
+        </Card>
+
+        {/* Streaming Breakdown Card */}
+        {partial.breakdown.length > 0 && (
+          <Card style={styles.card}>
+            <Card.Content>
+              <Title>Word Breakdown</Title>
+              {partial.breakdown.map((item, index) => (
+                <View key={index} style={styles.breakdownItem}>
+                  <View style={styles.wordClickArea}>
+                    <View style={styles.wordContainer}>
+                      <Text style={styles.japaneseWord}>{item.word}</Text>
+                      {item.reading ? (
+                        <Text style={styles.reading}>({item.reading})</Text>
+                      ) : null}
+                    </View>
+                    {item.meaning ? (
+                      <Text style={styles.meaning}>
+                        {item.meaning}
+                        {item.type ? <Text style={styles.partOfSpeech}> - {item.type}</Text> : null}
+                      </Text>
+                    ) : null}
+                  </View>
+                  <View style={styles.favoriteButton}>
+                    <Ionicons name="heart-outline" size={20} color="#999" />
+                  </View>
+                </View>
+              ))}
+            </Card.Content>
+          </Card>
+        )}
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -226,5 +305,17 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
+  },
+  streamingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  streamingSpinner: {
+    marginRight: 8,
+  },
+  streamingPlaceholder: {
+    color: '#BDBDBD',
+    fontSize: 16,
   },
 });

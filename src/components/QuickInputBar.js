@@ -12,7 +12,7 @@ export const QuickInputBar = ({ onPress }) => {
         numberOfLines={6}
         style={styles.textInput}
         mode="outlined"
-        placeholder="日本語のテキストをここに貼り付けてください"
+        placeholder=""
         editable={false}
         pointerEvents="none"
       />

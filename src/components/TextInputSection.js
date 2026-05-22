@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { TextInput, Button, HelperText } from 'react-native-paper';
 
 export const TextInputSection = ({ 
@@ -10,20 +10,29 @@ export const TextInputSection = ({
   error,
   inputRef,
 }) => {
+  const [focused, setFocused] = useState(false);
+
   return (
     <View style={styles.container}>
-      <TextInput
-        ref={inputRef}
-        label="Paste Japanese text here"
-        value={text}
-        onChangeText={onTextChange}
-        multiline
-        numberOfLines={6}
-        style={styles.textInput}
-        mode="outlined"
-        placeholder="日本語のテキストをここに貼り付けてください"
-      />
-      
+      <View>
+        <TextInput
+          ref={inputRef}
+          label="Paste Japanese text here"
+          value={text}
+          onChangeText={onTextChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          multiline
+          numberOfLines={6}
+          style={styles.textInput}
+          mode="outlined"
+        />
+        {!text && focused && (
+          <Text style={styles.floatingPlaceholder} pointerEvents="none">
+            
+          </Text>
+        )}
+      </View>
       {error && (
         <HelperText type="error" visible={!!error}>
           {error}
@@ -51,6 +60,15 @@ const styles = StyleSheet.create({
   textInput: {
     marginBottom: 10,
     backgroundColor: 'white',
+  },
+  floatingPlaceholder: {
+    position: 'absolute',
+    top: 28,
+    left: 14,
+    right: 14,
+    fontSize: 14,
+    color: '#BDBDBD',
+    pointerEvents: 'none',
   },
   button: {
     marginTop: 10,

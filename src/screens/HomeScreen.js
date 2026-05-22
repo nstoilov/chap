@@ -14,6 +14,7 @@ export const HomeScreen = () => {
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [streamingText, setStreamingText] = useState('');
 
   const scrollViewRef = useRef(null);
   const inputRef = useRef(null);
@@ -30,11 +31,15 @@ export const HomeScreen = () => {
     setIsLoading(true);
     setError('');
     setResult(null);
+    setStreamingText('');
     setOriginalText(text);
 
     try {
-      const translationResult = await translateWithBreakdown(text);
+      const translationResult = await translateWithBreakdown(text, (chunk) => {
+        setStreamingText(prev => prev + chunk);
+      });
       setResult(translationResult);
+      setStreamingText('');
       setText('');
     } catch (err) {
       setError(err.message);
@@ -47,12 +52,16 @@ export const HomeScreen = () => {
     setText(word);
     setError('');
     setResult(null);
+    setStreamingText('');
     setIsLoading(true);
     setOriginalText(word);
 
     try {
-      const translationResult = await translateWithBreakdown(word);
+      const translationResult = await translateWithBreakdown(word, (chunk) => {
+        setStreamingText(prev => prev + chunk);
+      });
       setResult(translationResult);
+      setStreamingText('');
       setText('');
     } catch (err) {
       setError(err.message);
@@ -99,6 +108,7 @@ export const HomeScreen = () => {
           onWordClick={handleWordClick}
           onNewTranslation={handleNewTranslation}
           isLoading={isLoading}
+          streamingText={streamingText}
         />
 
         {result && !isLoading && (

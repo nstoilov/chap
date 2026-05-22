@@ -1,7 +1,6 @@
 import OpenAI from 'openai';
 
 export default async function handler(req, res) {
-  // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -10,12 +9,10 @@ export default async function handler(req, res) {
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
 
-  // Handle preflight request
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -31,10 +28,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    // Initialize OpenAI with server-side API key
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     const prompt = `Translate this Japanese text to English and break down each word. Be concise.
 
@@ -54,39 +48,38 @@ Respond in this exact JSON format:
   "grammar": "Brief grammar notes"
 }`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Faster and cheaper model
+    // Set SSE headers so the client can read chunks as they arrive
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const stream = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
       messages: [
-        {
-          role: "system",
-          content: "You are a Japanese translator. Respond only with valid JSON. Be concise."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
+        { role: 'system', content: 'You are a Japanese translator. Respond only with valid JSON. Be concise.' },
+        { role: 'user', content: prompt },
       ],
-      max_tokens: 800, // Reduced for faster responses
-      temperature: 0.1 // Lower for more consistent, faster responses
+      max_tokens: 800,
+      temperature: 0.1,
+      stream: true,
     });
 
-    let result;
-    try {
-      result = JSON.parse(response.choices[0].message.content);
-    } catch (parseError) {
-      // Fallback response
-      result = {
-        translation: response.choices[0].message.content,
-        breakdown: [],
-        grammar: "Unable to parse structured response"
-      };
+    let accumulated = '';
+
+    for await (const chunk of stream) {
+      const delta = chunk.choices[0]?.delta?.content ?? '';
+      if (delta) {
+        accumulated += delta;
+        // Send each chunk as an SSE event
+        res.write(`data: ${JSON.stringify({ chunk: delta })}\n\n`);
+      }
     }
-    
-    return res.status(200).json(result);
+
+    // Send the fully accumulated text as the final event so the client can parse it
+    res.write(`data: ${JSON.stringify({ done: true, full: accumulated })}\n\n`);
+    res.end();
   } catch (error) {
-    return res.status(500).json({ 
-      error: 'Failed to translate text',
-      message: error.message,
-    });
+    res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
+    res.end();
   }
 }
