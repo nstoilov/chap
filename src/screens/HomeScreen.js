@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TextInputSection } from '../components/TextInputSection';
 import { TranslationResult } from '../components/TranslationResult';
+import { QuickInputBar } from '../components/QuickInputBar';
 import { translateWithBreakdown } from '../services/openaiService';
 
 export const HomeScreen = () => {
@@ -13,6 +14,15 @@ export const HomeScreen = () => {
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const scrollViewRef = useRef(null);
+  const inputRef = useRef(null);
+
+  const focusTopInput = () => {
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    // Small delay to let scroll finish before focusing
+    setTimeout(() => inputRef.current?.focus(), 300);
+  };
 
   const handleTranslate = async () => {
     if (!text.trim()) return;
@@ -70,6 +80,7 @@ export const HomeScreen = () => {
       </Appbar.Header>
       
       <ScrollView 
+        ref={scrollViewRef}
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
       >
@@ -79,6 +90,7 @@ export const HomeScreen = () => {
           onTranslate={handleTranslate}
           isLoading={isLoading}
           error={error}
+          inputRef={inputRef}
         />
         
         <TranslationResult 
@@ -88,6 +100,10 @@ export const HomeScreen = () => {
           onNewTranslation={handleNewTranslation}
           isLoading={isLoading}
         />
+
+        {result && !isLoading && (
+          <QuickInputBar onPress={focusTopInput} />
+        )}
       </ScrollView>
     </SafeAreaView>
   );

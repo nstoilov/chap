@@ -7,11 +7,13 @@ export const TextInputSection = ({
   onTextChange, 
   onTranslate, 
   isLoading, 
-  error 
+  error,
+  inputRef,
 }) => {
   return (
     <View style={styles.container}>
       <TextInput
+        ref={inputRef}
         label="Paste Japanese text here"
         value={text}
         onChangeText={onTextChange}

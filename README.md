@@ -34,6 +34,29 @@ A React Native Expo app that uses ChatGPT to translate Japanese text to English 
    - Scan the QR code with Expo Go app
    - Or run on simulator: `npx expo start --ios` or `npx expo start --android`
 
+## Running on Each Platform
+
+**iOS** (requires macOS + Xcode)
+```bash
+npx expo run:ios
+```
+
+**Android** (requires Android Studio + emulator or device)
+```bash
+npx expo run:android
+```
+
+**Web**
+```bash
+npx expo start --web
+```
+
+**macOS (Electron)**
+```bash
+npm run electron
+```
+> This builds the web bundle first, then launches the Electron app. To relaunch without rebuilding: `npm run electron:dev`
+
 ## How to Use
 
 1. **Start the App**: Run `npx expo start` and scan the QR code
