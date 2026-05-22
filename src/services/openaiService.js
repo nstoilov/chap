@@ -30,7 +30,7 @@ const parseSSEBuffer = (buffer) => {
 };
 
 // Streaming via XMLHttpRequest — works on both React Native and Web
-const translateWithXHR = (url, japaneseText, onChunk) => {
+const translateWithXHR = (url, japaneseText, onChunk, model) => {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', url);
@@ -57,13 +57,13 @@ const translateWithXHR = (url, japaneseText, onChunk) => {
     };
 
     xhr.onerror = () => reject(new Error('Network error'));
-    xhr.send(JSON.stringify({ text: japaneseText }));
+    xhr.send(JSON.stringify({ text: japaneseText, model }));
   });
 };
 
 // onChunk(text) is called with each streamed token.
 // Returns the parsed result object when streaming is complete.
-export const translateWithBreakdown = async (japaneseText, onChunk) => {
+export const translateWithBreakdown = async (japaneseText, onChunk, model) => {
   try {
     const baseUrl = API_CONFIG.getBaseUrl();
     const apiUrl = `${baseUrl}${ENDPOINTS.TRANSLATE}`;
@@ -73,7 +73,7 @@ export const translateWithBreakdown = async (japaneseText, onChunk) => {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: japaneseText }),
+        body: JSON.stringify({ text: japaneseText, model }),
       });
 
       if (!response.ok) {
@@ -98,7 +98,7 @@ export const translateWithBreakdown = async (japaneseText, onChunk) => {
     }
 
     // React Native — use XHR which supports partial responseText
-    return await translateWithXHR(apiUrl, japaneseText, onChunk);
+    return await translateWithXHR(apiUrl, japaneseText, onChunk, model);
 
   } catch (error) {
     throw new Error(`Failed to translate text: ${error.message}`);

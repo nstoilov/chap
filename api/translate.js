@@ -1,4 +1,33 @@
 import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const OPENAI_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini'];
+const GOOGLE_MODELS = ['gemini-2.5-flash'];
+const ALLOWED_MODELS = [...OPENAI_MODELS, ...GOOGLE_MODELS];
+
+const SYSTEM_PROMPT = 'You are a Japanese translator. Respond only with valid JSON. Be concise.';
+
+const buildPrompt = (text) => `Translate this Japanese text to English and break down each word. Be concise.
+
+Japanese: "${text}"
+
+Rules for the breakdown:
+- Include only meaningful words (nouns, verbs, adjectives, adverbs, particles, conjunctions).
+- Do NOT include punctuation marks (。、！？… etc.) as breakdown items.
+
+Respond in this exact JSON format:
+{
+  "translation": "English translation",
+  "breakdown": [
+    {
+      "word": "Japanese word",
+      "reading": "hiragana reading",
+      "meaning": "English meaning",
+      "type": "part of speech"
+    }
+  ],
+  "grammar": "Brief grammar notes"
+}`;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -18,60 +47,64 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { text } = req.body;
+    const { text, model: requestedModel } = req.body;
 
     if (!text || typeof text !== 'string') {
       return res.status(400).json({ error: 'Invalid text parameter' });
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({ error: 'Server configuration error' });
-    }
-
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-    const prompt = `Translate this Japanese text to English and break down each word. Be concise.
-
-Japanese: "${text}"
-
-Respond in this exact JSON format:
-{
-  "translation": "English translation",
-  "breakdown": [
-    {
-      "word": "Japanese word",
-      "reading": "hiragana reading", 
-      "meaning": "English meaning",
-      "type": "part of speech"
-    }
-  ],
-  "grammar": "Brief grammar notes"
-}`;
+    const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'gpt-4.1-mini';
 
     // Set SSE headers so the client can read chunks as they arrive
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    const stream = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: 'You are a Japanese translator. Respond only with valid JSON. Be concise.' },
-        { role: 'user', content: prompt },
-      ],
-      max_tokens: 800,
-      temperature: 0.1,
-      stream: true,
-    });
-
     let accumulated = '';
 
-    for await (const chunk of stream) {
-      const delta = chunk.choices[0]?.delta?.content ?? '';
-      if (delta) {
-        accumulated += delta;
-        // Send each chunk as an SSE event
-        res.write(`data: ${JSON.stringify({ chunk: delta })}\n\n`);
+    if (GOOGLE_MODELS.includes(model)) {
+      // --- Google Gemini ---
+      if (!process.env.GEMINI_API_KEY) {
+        res.write(`data: ${JSON.stringify({ error: 'Gemini API key not configured' })}\n\n`);
+        return res.end();
+      }
+
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const geminiModel = genAI.getGenerativeModel({ model, systemInstruction: SYSTEM_PROMPT });
+      const streamResult = await geminiModel.generateContentStream(buildPrompt(text));
+
+      for await (const chunk of streamResult.stream) {
+        const delta = chunk.text();
+        if (delta) {
+          accumulated += delta;
+          res.write(`data: ${JSON.stringify({ chunk: delta })}\n\n`);
+        }
+      }
+    } else {
+      // --- OpenAI ---
+      if (!process.env.OPENAI_API_KEY) {
+        res.write(`data: ${JSON.stringify({ error: 'OpenAI API key not configured' })}\n\n`);
+        return res.end();
+      }
+
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const stream = await openai.chat.completions.create({
+        model,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: buildPrompt(text) },
+        ],
+        max_tokens: 800,
+        temperature: 0.1,
+        stream: true,
+      });
+
+      for await (const chunk of stream) {
+        const delta = chunk.choices[0]?.delta?.content ?? '';
+        if (delta) {
+          accumulated += delta;
+          res.write(`data: ${JSON.stringify({ chunk: delta })}\n\n`);
+        }
       }
     }
 

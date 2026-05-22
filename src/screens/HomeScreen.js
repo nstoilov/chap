@@ -6,7 +6,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TextInputSection } from '../components/TextInputSection';
 import { TranslationResult } from '../components/TranslationResult';
 import { QuickInputBar } from '../components/QuickInputBar';
+import { ModelPicker } from '../components/ModelPicker';
 import { translateWithBreakdown } from '../services/openaiService';
+import { DEFAULT_MODEL } from '../config/models';
 
 export const HomeScreen = () => {
   const [text, setText] = useState('');
@@ -15,6 +17,7 @@ export const HomeScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [streamingText, setStreamingText] = useState('');
+  const [model, setModel] = useState(DEFAULT_MODEL);
 
   const scrollViewRef = useRef(null);
   const inputRef = useRef(null);
@@ -37,7 +40,7 @@ export const HomeScreen = () => {
     try {
       const translationResult = await translateWithBreakdown(text, (chunk) => {
         setStreamingText(prev => prev + chunk);
-      });
+      }, model);
       setResult(translationResult);
       setStreamingText('');
       setText('');
@@ -59,7 +62,7 @@ export const HomeScreen = () => {
     try {
       const translationResult = await translateWithBreakdown(word, (chunk) => {
         setStreamingText(prev => prev + chunk);
-      });
+      }, model);
       setResult(translationResult);
       setStreamingText('');
       setText('');
@@ -86,6 +89,7 @@ export const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       <Appbar.Header>
         <Appbar.Content title="Japanese Translator" />
+        <ModelPicker selectedModel={model} onModelChange={setModel} />
       </Appbar.Header>
       
       <ScrollView 
