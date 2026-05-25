@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const OPENAI_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini'];
-const GOOGLE_MODELS = ['gemini-2.5-flash'];
+const GOOGLE_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash'];
 const ALLOWED_MODELS = [...OPENAI_MODELS, ...GOOGLE_MODELS];
 
 const SYSTEM_PROMPT = 'You are a Japanese language expert. Respond only with valid JSON. Be concise.';

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { Menu, Button } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-import { MODELS } from '../config/models';
+import { MODELS, ENABLE_PAID_MODELS } from '../config/models';
 
 export const ModelPicker = ({ selectedModel, onModelChange }) => {
   const [visible, setVisible] = useState(false);
@@ -25,17 +26,28 @@ export const ModelPicker = ({ selectedModel, onModelChange }) => {
         </Button>
       }
     >
-      {MODELS.map(model => (
-        <Menu.Item
-          key={model.id}
-          onPress={() => {
-            onModelChange(model.id);
-            setVisible(false);
-          }}
-          title={model.label}
-          trailingIcon={selectedModel === model.id ? 'check' : undefined}
-        />
-      ))}
+      {MODELS.map(model => {
+        const disabled = model.paid && !ENABLE_PAID_MODELS;
+        return (
+          <Menu.Item
+            key={model.id}
+            onPress={() => {
+              if (disabled) return;
+              onModelChange(model.id);
+              setVisible(false);
+            }}
+            title={disabled ? `${model.label} (unavailable)` : model.label}
+            titleStyle={disabled ? styles.disabledLabel : undefined}
+            trailingIcon={selectedModel === model.id ? 'check' : undefined}
+          />
+        );
+      })}
     </Menu>
   );
 };
+
+const styles = StyleSheet.create({
+  disabledLabel: {
+    color: '#BDBDBD',
+  },
+});
