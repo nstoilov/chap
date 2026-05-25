@@ -35,13 +35,13 @@ const parseSSEBuffer = (buffer) => {
 };
 
 // Streaming via XMLHttpRequest — works on both React Native and Web
-const translateWithXHR = (url, japaneseText, onChunk, model) => {
+const translateWithXHR = (url, japaneseText, onChunk, model, direction) => {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', url);
     xhr.setRequestHeader('Content-Type', 'application/json');
 
-    let processed = 0; // how many characters of responseText we've already parsed
+    let processed = 0;
 
     xhr.onreadystatechange = () => {
       if (xhr.readyState < 3) return;
@@ -62,13 +62,13 @@ const translateWithXHR = (url, japaneseText, onChunk, model) => {
     };
 
     xhr.onerror = () => reject(new Error('Network error'));
-    xhr.send(JSON.stringify({ text: japaneseText, model }));
+    xhr.send(JSON.stringify({ text: japaneseText, model, direction }));
   });
 };
 
 // onChunk(text) is called with each streamed token.
 // Returns the parsed result object when streaming is complete.
-export const translateWithBreakdown = async (japaneseText, onChunk, model) => {
+export const translateWithBreakdown = async (japaneseText, onChunk, model, direction) => {
   try {
     const baseUrl = API_CONFIG.getBaseUrl();
     const apiUrl = `${baseUrl}${ENDPOINTS.TRANSLATE}`;
@@ -78,7 +78,7 @@ export const translateWithBreakdown = async (japaneseText, onChunk, model) => {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: japaneseText, model }),
+        body: JSON.stringify({ text: japaneseText, model, direction }),
       });
 
       if (!response.ok) {
@@ -103,7 +103,7 @@ export const translateWithBreakdown = async (japaneseText, onChunk, model) => {
     }
 
     // React Native — use XHR which supports partial responseText
-    return await translateWithXHR(apiUrl, japaneseText, onChunk, model);
+    return await translateWithXHR(apiUrl, japaneseText, onChunk, model, direction);
 
   } catch (error) {
     throw new Error(`Failed to translate text: ${error.message}`);

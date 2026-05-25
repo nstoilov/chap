@@ -30,7 +30,7 @@ function parseStreamingResult(text) {
   return parsed;
 }
 
-export const TranslationResult = ({ result, originalText, onWordClick, onNewTranslation, isLoading, streamingText }) => {
+export const TranslationResult = ({ result, originalText, onWordClick, onNewTranslation, isLoading, streamingText, direction }) => {
   const [favoriteStates, setFavoriteStates] = useState({});
 
   useEffect(() => {
@@ -144,7 +144,7 @@ export const TranslationResult = ({ result, originalText, onWordClick, onNewTran
       {/* Translation Card */}
       <Card style={styles.card}>
         <Card.Content>
-          <Title>Translation</Title>
+          <Title>{direction === 'en-jp' ? 'Japanese Translation' : 'Translation'}</Title>
           <Paragraph style={styles.translationText}>
             {result.translation}
           </Paragraph>
@@ -253,6 +253,11 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: '#2E7D32',
     fontWeight: '500',
+  },
+  furiganaText: {
+    fontSize: 16,
+    lineHeight: 28,
+    color: '#1565C0',
   },
   breakdownItem: {
     flexDirection: 'row',

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
-import { Appbar } from 'react-native-paper';
+import { StyleSheet, ScrollView, View } from 'react-native';
+import { Appbar, Button } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TextInputSection } from '../components/TextInputSection';
@@ -22,6 +22,7 @@ export const HomeScreen = () => {
   const [error, setError] = useState('');
   const [streamingText, setStreamingText] = useState('');
   const [model, setModel] = useState(DEFAULT_MODEL);
+  const [direction, setDirection] = useState('jp-en'); // 'jp-en' | 'en-jp'
 
   const scrollViewRef = useRef(null);
   const inputRef = useRef(null);
@@ -55,7 +56,7 @@ export const HomeScreen = () => {
     try {
       const translationResult = await translateWithBreakdown(text, (chunk) => {
         setStreamingText(prev => prev + chunk);
-      }, model);
+      }, model, direction);
       setResult(translationResult);
       setStreamingText('');
       setText('');
@@ -77,7 +78,7 @@ export const HomeScreen = () => {
     try {
       const translationResult = await translateWithBreakdown(word, (chunk) => {
         setStreamingText(prev => prev + chunk);
-      }, model);
+      }, model, 'jp-en');
       setResult(translationResult);
       setStreamingText('');
       setText('');
@@ -104,9 +105,26 @@ export const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       <Appbar.Header>
         <Appbar.Content title="Japanese Translator" />
-        <ModelPicker selectedModel={model} onModelChange={setModel} />
       </Appbar.Header>
-      
+
+      <View style={styles.toolbar}>
+        <Button
+          onPress={() => {
+            setDirection(d => d === 'jp-en' ? 'en-jp' : 'jp-en');
+            setText('');
+            setResult(null);
+            setStreamingText('');
+            setError('');
+          }}
+          compact
+          mode="outlined"
+          textColor="#555"
+        >
+          {direction === 'jp-en' ? 'JP → EN' : 'EN → JP'}
+        </Button>
+        <ModelPicker selectedModel={model} onModelChange={setModel} />
+      </View>
+
       <ScrollView 
         ref={scrollViewRef}
         style={styles.content}
@@ -120,6 +138,7 @@ export const HomeScreen = () => {
           error={error}
           inputRef={inputRef}
           maxChars={MAX_INPUT_CHARS}
+          direction={direction}
         />
         
         <TranslationResult 
@@ -129,6 +148,7 @@ export const HomeScreen = () => {
           onNewTranslation={handleNewTranslation}
           isLoading={isLoading}
           streamingText={streamingText}
+          direction={direction}
         />
 
         {result && !isLoading && (
@@ -143,6 +163,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  toolbar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#fff',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#E0E0E0',
   },
   content: {
     flex: 1,

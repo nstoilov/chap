@@ -16,6 +16,7 @@ export const ModelPicker = ({ selectedModel, onModelChange }) => {
         <Button
           onPress={() => setVisible(true)}
           compact
+          mode="outlined"
           textColor="#555"
           icon={() => <Ionicons name="chevron-down" size={14} color="#555" />}
           contentStyle={{ flexDirection: 'row-reverse' }}

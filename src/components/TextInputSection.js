@@ -10,17 +10,20 @@ export const TextInputSection = ({
   error,
   inputRef,
   maxChars,
+  direction,
 }) => {
   const [focused, setFocused] = useState(false);
   const charCount = text.length;
   const isOverLimit = maxChars && charCount > maxChars;
+  const isEnToJp = direction === 'en-jp';
+  const inputLabel = isEnToJp ? 'Paste English text here' : 'Paste Japanese text here';
 
   return (
     <View style={styles.container}>
       <View>
         <TextInput
           ref={inputRef}
-          label="Paste Japanese text here"
+          label={inputLabel}
           value={text}
           onChangeText={onTextChange}
           onFocus={() => setFocused(true)}
