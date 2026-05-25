@@ -21,8 +21,13 @@ const parseSSEBuffer = (buffer) => {
     if (data.error) throw new Error(data.error);
     if (data.chunk) chunks.push(data.chunk);
     if (data.done) {
-      try { finalResult = JSON.parse(data.full); }
-      catch { finalResult = { translation: data.full, breakdown: [], grammar: 'Unable to parse structured response' }; }
+      try {
+        // Strip markdown code fences that some models (e.g. Gemini) wrap around JSON
+        const cleaned = data.full.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+        finalResult = JSON.parse(cleaned);
+      } catch {
+        finalResult = { translation: data.full, breakdown: [], grammar: 'Unable to parse structured response' };
+      }
     }
   }
 

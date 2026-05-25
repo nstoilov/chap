@@ -9,6 +9,10 @@ import { QuickInputBar } from '../components/QuickInputBar';
 import { ModelPicker } from '../components/ModelPicker';
 import { translateWithBreakdown } from '../services/openaiService';
 import { DEFAULT_MODEL } from '../config/models';
+import { consumeRequest, DAILY_LIMIT } from '../services/rateLimiter';
+
+// ~2-3 Japanese sentences (Japanese is dense, ~50 chars/sentence)
+const MAX_INPUT_CHARS = 150;
 
 export const HomeScreen = () => {
   const [text, setText] = useState('');
@@ -30,6 +34,17 @@ export const HomeScreen = () => {
 
   const handleTranslate = async () => {
     if (!text.trim()) return;
+
+    if (text.trim().length > MAX_INPUT_CHARS) {
+      setError(`Text is too long. Please keep it under ${MAX_INPUT_CHARS} characters (2–3 sentences).`);
+      return;
+    }
+
+    const allowed = await consumeRequest();
+    if (!allowed) {
+      setError(`Daily limit of ${DAILY_LIMIT} translations reached. Come back tomorrow!`);
+      return;
+    }
 
     setIsLoading(true);
     setError('');
@@ -104,6 +119,7 @@ export const HomeScreen = () => {
           isLoading={isLoading}
           error={error}
           inputRef={inputRef}
+          maxChars={MAX_INPUT_CHARS}
         />
         
         <TranslationResult 

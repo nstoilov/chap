@@ -9,8 +9,11 @@ export const TextInputSection = ({
   isLoading, 
   error,
   inputRef,
+  maxChars,
 }) => {
   const [focused, setFocused] = useState(false);
+  const charCount = text.length;
+  const isOverLimit = maxChars && charCount > maxChars;
 
   return (
     <View style={styles.container}>
@@ -26,10 +29,17 @@ export const TextInputSection = ({
           numberOfLines={6}
           style={styles.textInput}
           mode="outlined"
+          outlineColor={isOverLimit ? '#E53935' : undefined}
+          activeOutlineColor={isOverLimit ? '#E53935' : undefined}
         />
         {!text && focused && (
           <Text style={styles.floatingPlaceholder} pointerEvents="none">
             
+          </Text>
+        )}
+        {text.length > 0 && (
+          <Text style={[styles.charCount, isOverLimit && styles.charCountOver]}>
+            {charCount}{maxChars ? `/${maxChars}` : ''}
           </Text>
         )}
       </View>
@@ -42,7 +52,7 @@ export const TextInputSection = ({
       <Button
         mode="contained"
         onPress={onTranslate}
-        disabled={isLoading || !text.trim()}
+        disabled={isLoading || !text.trim() || isOverLimit}
         loading={isLoading}
         style={styles.button}
         contentStyle={styles.buttonContent}
@@ -69,6 +79,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#BDBDBD',
     pointerEvents: 'none',
+  },
+  charCount: {
+    position: 'absolute',
+    bottom: 18,
+    right: 12,
+    fontSize: 12,
+    color: '#BDBDBD',
+  },
+  charCountOver: {
+    color: '#E53935',
+    fontWeight: '600',
   },
   button: {
     marginTop: 10,

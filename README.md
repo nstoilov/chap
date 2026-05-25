@@ -102,3 +102,6 @@ npx expo export --platform web
 
 ## deploy function
 npx vercel --prod --archive=tgz  
+
+
+## add feature > switch en > jp
