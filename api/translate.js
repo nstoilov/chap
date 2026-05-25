@@ -242,6 +242,7 @@ export default async function handler(req, res) {
     }
 
     // Send the fully accumulated text as the final event so the client can parse it
+    console.log('[translate] accumulated:', accumulated);
     res.write(`data: ${JSON.stringify({ done: true, full: accumulated })}\n\n`);
     res.end();
   } catch (error) {
