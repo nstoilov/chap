@@ -116,7 +116,13 @@ export default async function handler(req, res) {
       }
 
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const geminiModel = genAI.getGenerativeModel({ model, systemInstruction: SYSTEM_PROMPT });
+      const geminiModel = genAI.getGenerativeModel({
+        model,
+        systemInstruction: SYSTEM_PROMPT,
+        generationConfig: {
+          thinkingConfig: { thinkingBudget: 0 },
+        },
+      });
       const streamResult = await geminiModel.generateContentStream(prompt);
 
       for await (const chunk of streamResult.stream) {
