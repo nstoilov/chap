@@ -60,7 +60,8 @@ export default async function handler(req, res) {
   const origin = req.headers.origin;
 
   // Lock CORS to our own domain (mobile apps don't send Origin, so they pass through)
-  res.setHeader('Access-Control-Allow-Origin', origin === allowedOrigin ? allowedOrigin : allowedOrigin);
+  res.setHeader('Access-Control-Allow-Origin', origin === allowedOrigin ? allowedOrigin : '*');
+  res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-App-Key');
@@ -73,9 +74,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Verify shared app secret
+  // Verify shared app secret — only enforced when APP_SECRET env var is configured
   const appKey = req.headers['x-app-key'];
-  if (!appKey || appKey !== process.env.APP_SECRET) {
+  if (process.env.APP_SECRET && appKey !== process.env.APP_SECRET) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 

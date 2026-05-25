@@ -47,6 +47,12 @@ const translateWithXHR = (url, japaneseText, onChunk, model, direction) => {
     xhr.onreadystatechange = () => {
       if (xhr.readyState < 3) return;
 
+      // Handle HTTP error responses (e.g. 401, 403) before any SSE parsing
+      if (xhr.readyState === 4 && xhr.status !== 200) {
+        reject(new Error(`Server error (${xhr.status})`));
+        return;
+      }
+
       const newText = xhr.responseText.slice(processed);
       if (!newText) return;
 
