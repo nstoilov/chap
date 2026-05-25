@@ -41,9 +41,9 @@ export const HomeScreen = () => {
       return;
     }
 
-    const allowed = await consumeRequest();
+    const allowed = await consumeRequest(model);
     if (!allowed) {
-      setError(`Daily limit of ${DAILY_LIMIT} translations reached. Come back tomorrow!`);
+      setError(`Daily limit of ${DAILY_LIMIT} paid translations reached. Come back tomorrow!`);
       return;
     }
 

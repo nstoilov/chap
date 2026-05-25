@@ -1,4 +1,4 @@
-import { API_CONFIG, ENDPOINTS } from '../config/api';
+import { API_CONFIG, ENDPOINTS, APP_SECRET } from '../config/api';
 
 const isStreamingSupported = () => {
   try {
@@ -40,6 +40,7 @@ const translateWithXHR = (url, japaneseText, onChunk, model, direction) => {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', url);
     xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('X-App-Key', APP_SECRET);
 
     let processed = 0;
 
@@ -77,7 +78,7 @@ export const translateWithBreakdown = async (japaneseText, onChunk, model, direc
     if (isStreamingSupported()) {
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-App-Key': APP_SECRET },
         body: JSON.stringify({ text: japaneseText, model, direction }),
       });
 

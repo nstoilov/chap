@@ -1,4 +1,7 @@
 // API configuration for different platforms
+// APP_SECRET must match the APP_SECRET environment variable set in Vercel
+export const APP_SECRET = 'chap_k7x2m9p4w1q8f5j3';
+
 export const API_CONFIG = {
   // Stable project alias - doesn't change between deployments
   PRODUCTION_API_URL: 'https://chap-nstoilovs-projects.vercel.app',

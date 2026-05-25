@@ -1,9 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MODELS } from '../config/models';
 
-const STORAGE_KEY = '@chap_rate_limit';
+const STORAGE_KEY = '@chap_paid_rate_limit';
 export const DAILY_LIMIT = 50;
 
 const today = () => new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+
+const isPaidModel = (modelId) => {
+  const model = MODELS.find(m => m.id === modelId);
+  return model?.paid === true;
+};
 
 const loadState = async () => {
   try {
@@ -19,16 +25,18 @@ const saveState = async (state) => {
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 };
 
-// Returns the number of requests used today
+// Returns the number of paid requests used today
 export const getUsageToday = async () => {
   const state = await loadState();
   if (state.date !== today()) return 0;
   return state.count;
 };
 
-// Returns true if the request is allowed, false if limit is reached.
-// Increments the counter on success.
-export const consumeRequest = async () => {
+// Returns true if the request is allowed, false if daily limit is reached.
+// Free models always return true without incrementing the counter.
+export const consumeRequest = async (modelId) => {
+  if (!isPaidModel(modelId)) return true;
+
   let state = await loadState();
 
   if (state.date !== today()) {
