@@ -113,6 +113,6 @@ export const translateWithBreakdown = async (japaneseText, onChunk, model, direc
     return await translateWithXHR(apiUrl, japaneseText, onChunk, model, direction);
 
   } catch (error) {
-    throw new Error(`Failed to translate text: ${error.message}`);
+    throw new Error('Translation failed. Please try again.');
   }
 };

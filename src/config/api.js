@@ -1,6 +1,6 @@
 // API configuration for different platforms
 // APP_SECRET must match the APP_SECRET environment variable set in Vercel
-export const APP_SECRET = 'chap_k7x2m9p4w1q8f5j3';
+export const APP_SECRET = process.env.EXPO_PUBLIC_APP_SECRET;
 
 export const API_CONFIG = {
   // Stable project alias - doesn't change between deployments

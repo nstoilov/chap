@@ -2,10 +2,10 @@ import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const OPENAI_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini'];
-const GOOGLE_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+const GOOGLE_MODELS = ['gemini-2.5-flash'];
 const ALLOWED_MODELS = [...OPENAI_MODELS, ...GOOGLE_MODELS];
 // Models that cost money — blocked server-side when ENABLE_PAID_MODELS env var is not 'true'
-const PAID_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini', 'gemini-2.5-flash'];
+const PAID_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini'];
 
 const SYSTEM_PROMPT = 'You are a Japanese language expert. Respond only with valid JSON. Be concise.';
 
@@ -92,7 +92,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Text too long' });
     }
 
-    const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'gemini-2.0-flash';
+    const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'gemini-2.5-flash';
 
     // Block paid models unless explicitly enabled via env var
     if (PAID_MODELS.includes(model) && process.env.ENABLE_PAID_MODELS !== 'true') {
