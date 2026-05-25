@@ -2,10 +2,10 @@ import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const OPENAI_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini'];
-const GOOGLE_MODELS = ['gemini-2.5-flash'];
+const GOOGLE_MODELS = ['gemini-2.5-flash', 'gemini-2.5-pro'];
 const ALLOWED_MODELS = [...OPENAI_MODELS, ...GOOGLE_MODELS];
 // Models that cost money — blocked server-side when ENABLE_PAID_MODELS env var is not 'true'
-const PAID_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini'];
+const PAID_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini', 'gemini-2.5-pro'];
 
 const SYSTEM_PROMPT = 'You are a Japanese language expert. Respond only with valid JSON. Be concise.';
 
