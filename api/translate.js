@@ -32,30 +32,31 @@ Respond in this exact JSON format:
   "grammar": "Brief grammar notes"
 }`;
 
-const buildGroqPrompt = (text) => `Translate this Japanese text to English and break down each word.
+const buildGroqPrompt = (text) => `You are a Japanese translator. Translate the Japanese text to English, then break down each Japanese word.
 
 Japanese: "${text}"
 
-CRITICAL rules — you MUST follow these exactly:
-- "word" field: the original Japanese characters (kanji or kana). Example: 食べる, は, 私. NEVER use romaji here.
-- "reading" field: hiragana or katakana ONLY. Example: たべる, は, わたし. NEVER use romaji (no "taberu", no "wa", no "watashi").
-- "meaning" field: English meaning of that word.
-- "type" field: part of speech in English (noun, verb, particle, etc.).
-- Only include meaningful words. Skip punctuation.
-
-Respond with ONLY this JSON, no extra text:
+Here is an example of correct output for Japanese: "私は猫が好きです"
 {
-  "translation": "English translation of the full sentence",
+  "translation": "I like cats",
   "breakdown": [
-    {
-      "word": "Japanese characters only",
-      "reading": "hiragana/katakana only",
-      "meaning": "English meaning",
-      "type": "part of speech"
-    }
+    { "word": "私", "reading": "わたし", "meaning": "I", "type": "pronoun" },
+    { "word": "は", "reading": "は", "meaning": "topic marker", "type": "particle" },
+    { "word": "猫", "reading": "ねこ", "meaning": "cat", "type": "noun" },
+    { "word": "が", "reading": "が", "meaning": "subject marker", "type": "particle" },
+    { "word": "好き", "reading": "すき", "meaning": "like", "type": "adjective" }
   ],
-  "grammar": "Brief grammar notes"
-}`;
+  "grammar": "は marks the topic, が marks the subject of 好き"
+}
+
+Now do the same for: "${text}"
+- "word": the original Japanese word (kanji/kana, never romaji)
+- "reading": hiragana/katakana pronunciation (never romaji)
+- "meaning": English meaning of that word
+- "type": part of speech
+- Skip punctuation marks
+
+Respond with ONLY valid JSON, no other text.`;
 
 const buildEnToJpPrompt = (text) => `Translate this English text to Japanese. Provide a word breakdown with furigana readings.
 
@@ -81,31 +82,31 @@ Respond in this exact JSON format:
   "grammar": "Brief grammar notes"
 }`;
 
-const buildGroqEnToJpPrompt = (text) => `Translate this English text to Japanese. Provide a word breakdown.
+const buildGroqEnToJpPrompt = (text) => `You are a Japanese translator. Translate the English text to Japanese, then break down the Japanese translation word by word.
 
 English: "${text}"
 
-CRITICAL rules — you MUST follow these exactly:
-- "translation" field: the full Japanese translation using kanji/kana.
-- "word" field: Japanese characters (kanji or kana). NEVER use romaji here.
-- "reading" field: hiragana or katakana ONLY. NEVER use romaji (no "anata", no "wa", etc.).
-- "meaning" field: English meaning of that word.
-- "type" field: part of speech in English.
-- Only include meaningful words. Skip punctuation.
-
-Respond with ONLY this JSON, no extra text:
+Here is an example of correct output for English: "I like cats"
 {
-  "translation": "Japanese translation in kanji/kana",
+  "translation": "私は猫が好きです",
   "breakdown": [
-    {
-      "word": "Japanese characters only",
-      "reading": "hiragana/katakana only",
-      "meaning": "English meaning",
-      "type": "part of speech"
-    }
+    { "word": "私", "reading": "わたし", "meaning": "I", "type": "pronoun" },
+    { "word": "は", "reading": "は", "meaning": "topic marker", "type": "particle" },
+    { "word": "猫", "reading": "ねこ", "meaning": "cat", "type": "noun" },
+    { "word": "が", "reading": "が", "meaning": "subject marker", "type": "particle" },
+    { "word": "好き", "reading": "すき", "meaning": "like", "type": "adjective" }
   ],
-  "grammar": "Brief grammar notes"
-}`;
+  "grammar": "は marks the topic, が marks the subject of 好き"
+}
+
+Now do the same for: "${text}"
+- "translation": the full Japanese sentence in kanji/kana
+- "word": the Japanese word from the translation (kanji/kana, never romaji)
+- "reading": hiragana/katakana pronunciation (never romaji)
+- "meaning": English meaning of that Japanese word
+- "type": part of speech
+
+Respond with ONLY valid JSON, no other text.`;
 
 export default async function handler(req, res) {
   const allowedOrigin = 'https://chap-nstoilovs-projects.vercel.app';
