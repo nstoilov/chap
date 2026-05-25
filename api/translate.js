@@ -3,7 +3,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const OPENAI_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini'];
 const GOOGLE_MODELS = ['gemini-2.5-flash', 'gemini-2.5-pro'];
-const ALLOWED_MODELS = [...OPENAI_MODELS, ...GOOGLE_MODELS];
+const GROQ_MODELS = ['llama-3.3-70b-versatile'];
+const ALLOWED_MODELS = [...OPENAI_MODELS, ...GOOGLE_MODELS, ...GROQ_MODELS];
 // Models that cost money — blocked server-side when ENABLE_PAID_MODELS env var is not 'true'
 const PAID_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini', 'gemini-2.5-pro'];
 
@@ -127,6 +128,32 @@ export default async function handler(req, res) {
 
       for await (const chunk of streamResult.stream) {
         const delta = chunk.text();
+        if (delta) {
+          accumulated += delta;
+          res.write(`data: ${JSON.stringify({ chunk: delta })}\n\n`);
+        }
+      }
+    } else if (GROQ_MODELS.includes(model)) {
+      // --- Groq (OpenAI-compatible) ---
+      if (!process.env.GROK_API_KEY) {
+        res.write(`data: ${JSON.stringify({ error: 'Groq API key not configured' })}\n\n`);
+        return res.end();
+      }
+
+      const groq = new OpenAI({ apiKey: process.env.GROK_API_KEY, baseURL: 'https://api.groq.com/openai/v1' });
+      const groqStream = await groq.chat.completions.create({
+        model,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: prompt },
+        ],
+        max_tokens: 800,
+        temperature: 0.1,
+        stream: true,
+      });
+
+      for await (const chunk of groqStream) {
+        const delta = chunk.choices[0]?.delta?.content ?? '';
         if (delta) {
           accumulated += delta;
           res.write(`data: ${JSON.stringify({ chunk: delta })}\n\n`);
