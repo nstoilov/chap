@@ -66,6 +66,7 @@ English: "${text}"
 Rules for the breakdown:
 - Include only meaningful words (nouns, verbs, adjectives, adverbs, particles, conjunctions).
 - Do NOT include punctuation as breakdown items (。、！？…,，、· etc.). If a token is punctuation only, skip it entirely.
+- Keep conjugated verbs together as one entry (e.g. 行きました as one word, not split into 行き + まし + た).
 - "reading" must be the hiragana/katakana reading of the Japanese word.
 - "meaning" is the English meaning of that word.
 
