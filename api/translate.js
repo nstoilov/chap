@@ -32,6 +32,31 @@ Respond in this exact JSON format:
   "grammar": "Brief grammar notes"
 }`;
 
+const buildGroqPrompt = (text) => `Translate this Japanese text to English and break down each word.
+
+Japanese: "${text}"
+
+CRITICAL rules — you MUST follow these exactly:
+- "word" field: the original Japanese characters (kanji or kana). Example: 食べる, は, 私. NEVER use romaji here.
+- "reading" field: hiragana or katakana ONLY. Example: たべる, は, わたし. NEVER use romaji (no "taberu", no "wa", no "watashi").
+- "meaning" field: English meaning of that word.
+- "type" field: part of speech in English (noun, verb, particle, etc.).
+- Only include meaningful words. Skip punctuation.
+
+Respond with ONLY this JSON, no extra text:
+{
+  "translation": "English translation of the full sentence",
+  "breakdown": [
+    {
+      "word": "Japanese characters only",
+      "reading": "hiragana/katakana only",
+      "meaning": "English meaning",
+      "type": "part of speech"
+    }
+  ],
+  "grammar": "Brief grammar notes"
+}`;
+
 const buildEnToJpPrompt = (text) => `Translate this English text to Japanese. Provide a word breakdown with furigana readings.
 
 English: "${text}"
@@ -49,6 +74,32 @@ Respond in this exact JSON format:
     {
       "word": "Japanese word",
       "reading": "hiragana reading",
+      "meaning": "English meaning",
+      "type": "part of speech"
+    }
+  ],
+  "grammar": "Brief grammar notes"
+}`;
+
+const buildGroqEnToJpPrompt = (text) => `Translate this English text to Japanese. Provide a word breakdown.
+
+English: "${text}"
+
+CRITICAL rules — you MUST follow these exactly:
+- "translation" field: the full Japanese translation using kanji/kana.
+- "word" field: Japanese characters (kanji or kana). NEVER use romaji here.
+- "reading" field: hiragana or katakana ONLY. NEVER use romaji (no "anata", no "wa", etc.).
+- "meaning" field: English meaning of that word.
+- "type" field: part of speech in English.
+- Only include meaningful words. Skip punctuation.
+
+Respond with ONLY this JSON, no extra text:
+{
+  "translation": "Japanese translation in kanji/kana",
+  "breakdown": [
+    {
+      "word": "Japanese characters only",
+      "reading": "hiragana/katakana only",
       "meaning": "English meaning",
       "type": "part of speech"
     }
@@ -100,7 +151,10 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: 'This model is not available.' });
     }
 
-    const prompt = direction === 'en-jp' ? buildEnToJpPrompt(text) : buildPrompt(text);
+    const isGroq = GROQ_MODELS.includes(model);
+    const prompt = direction === 'en-jp'
+      ? (isGroq ? buildGroqEnToJpPrompt(text) : buildEnToJpPrompt(text))
+      : (isGroq ? buildGroqPrompt(text) : buildPrompt(text));
 
     // Set SSE headers so the client can read chunks as they arrive
     res.setHeader('Content-Type', 'text/event-stream');
