@@ -16,7 +16,7 @@ Japanese: "${text}"
 
 Rules for the breakdown:
 - Include only meaningful words (nouns, verbs, adjectives, adverbs, particles, conjunctions).
-- Do NOT include punctuation marks (。、！？… etc.) as breakdown items.
+- Do NOT include punctuation marks (。、！？…,，、· etc.) as breakdown items. If a token is punctuation only, skip it entirely.
 
 Respond in this exact JSON format:
 {
@@ -65,7 +65,7 @@ English: "${text}"
 
 Rules for the breakdown:
 - Include only meaningful words (nouns, verbs, adjectives, adverbs, particles, conjunctions).
-- Do NOT include punctuation as breakdown items.
+- Do NOT include punctuation as breakdown items (。、！？…,，、· etc.). If a token is punctuation only, skip it entirely.
 - "reading" must be the hiragana/katakana reading of the Japanese word.
 - "meaning" is the English meaning of that word.
 
