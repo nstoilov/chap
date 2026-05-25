@@ -54,6 +54,7 @@ Now do the same for: "${text}"
 - "reading": hiragana/katakana pronunciation (never romaji)
 - "meaning": English meaning of that word
 - "type": part of speech
+- Keep conjugated verbs together as one entry (e.g. 行きました as one word, not split into 行き + まし + た)
 - Skip punctuation marks
 
 Respond with ONLY valid JSON, no other text.`;
@@ -105,6 +106,7 @@ Now do the same for: "${text}"
 - "reading": hiragana/katakana pronunciation (never romaji)
 - "meaning": English meaning of that Japanese word
 - "type": part of speech
+- Keep conjugated verbs together as one entry (e.g. 行きました as one word, not split into 行き + まし + た)
 
 Respond with ONLY valid JSON, no other text.`;
 
@@ -243,7 +245,6 @@ export default async function handler(req, res) {
     }
 
     // Send the fully accumulated text as the final event so the client can parse it
-    console.log('[translate] accumulated:', accumulated);
     res.write(`data: ${JSON.stringify({ done: true, full: accumulated })}\n\n`);
     res.end();
   } catch (error) {
