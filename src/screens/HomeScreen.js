@@ -41,6 +41,13 @@ export const HomeScreen = () => {
       return;
     }
 
+    // Detect Japanese characters in input when direction is EN→JP
+    const hasJapanese = /[\u3000-\u9fff\uff00-\uffef]/.test(text);
+    if (direction === 'en-jp' && hasJapanese) {
+      setError('Japanese text detected. Switch to JP → EN mode to translate Japanese.');
+      return;
+    }
+
     const allowed = await consumeRequest(model);
     if (!allowed) {
       setError(`Daily limit of ${DAILY_LIMIT} paid translations reached. Come back tomorrow!`);
