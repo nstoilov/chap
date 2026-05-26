@@ -31,7 +31,10 @@
       "minSdkVersion": 21
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "meta": {
+        "color-scheme": "light"
+      }
     },
     "extra": {
       "eas": {

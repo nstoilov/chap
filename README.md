@@ -105,3 +105,5 @@ npx vercel --prod --archive=tgz
 
 
 ## add feature > switch en > jp
+
+To enable paid models later, just add ENABLE_PAID_MODELS=true in Vercel environment variables and redeploy.
