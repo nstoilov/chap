@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
+import { StyleSheet, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 import { Appbar, Button } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -23,6 +23,7 @@ export const HomeScreen = () => {
   const [streamingText, setStreamingText] = useState('');
   const [model, setModel] = useState(DEFAULT_MODEL);
   const [direction, setDirection] = useState('jp-en'); // 'jp-en' | 'en-jp'
+  const [formality, setFormality] = useState('polite'); // 'polite' | 'casual' (EN→JP only)
 
   const scrollViewRef = useRef(null);
   const inputRef = useRef(null);
@@ -63,7 +64,7 @@ export const HomeScreen = () => {
     try {
       const translationResult = await translateWithBreakdown(text, (chunk) => {
         setStreamingText(prev => prev + chunk);
-      }, model, direction);
+      }, model, direction, direction === 'en-jp' ? formality : undefined);
       setResult(translationResult);
       setStreamingText('');
       setText('');
@@ -85,7 +86,7 @@ export const HomeScreen = () => {
     try {
       const translationResult = await translateWithBreakdown(word, (chunk) => {
         setStreamingText(prev => prev + chunk);
-      }, model, 'jp-en');
+      }, model, 'jp-en', undefined);
       setResult(translationResult);
       setStreamingText('');
       setText('');
@@ -131,6 +132,30 @@ export const HomeScreen = () => {
         </Button>
         <ModelPicker selectedModel={model} onModelChange={setModel} />
       </View>
+
+      {direction === 'en-jp' && (
+        <View style={styles.formalityBar}>
+          <Text
+            style={[styles.formalityLabel, formality === 'polite' && styles.formalityLabelActive]}
+            onPress={() => setFormality('polite')}
+          >
+            polite
+          </Text>
+          <TouchableOpacity
+            style={[styles.toggleTrack, formality === 'casual' && styles.toggleTrackOn]}
+            onPress={() => setFormality(f => f === 'polite' ? 'casual' : 'polite')}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.toggleThumb, formality === 'casual' && styles.toggleThumbOn]} />
+          </TouchableOpacity>
+          <Text
+            style={[styles.formalityLabel, formality === 'casual' && styles.formalityLabelActive]}
+            onPress={() => setFormality('casual')}
+          >
+            casual
+          </Text>
+        </View>
+      )}
 
       <ScrollView 
         ref={scrollViewRef}
@@ -180,6 +205,47 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E0E0E0',
+  },
+  formalityBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#fff',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#E0E0E0',
+  },
+  formalityLabel: {
+    fontSize: 14,
+    color: '#999',
+    textTransform: 'lowercase',
+  },
+  formalityLabelActive: {
+    color: '#555',
+    fontWeight: '600',
+  },
+  toggleTrack: {
+    width: 44,
+    height: 24,
+    borderRadius: 12,
+    marginHorizontal: 8,
+    backgroundColor: '#E0E0E0',
+    justifyContent: 'center',
+    padding: 2,
+  },
+  toggleTrackOn: {
+    backgroundColor: '#555',
+  },
+  toggleThumb: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    transform: [{ translateX: 0 }],
+  },
+  toggleThumbOn: {
+    transform: [{ translateX: 20 }],
   },
   content: {
     flex: 1,

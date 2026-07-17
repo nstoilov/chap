@@ -35,7 +35,7 @@ const parseSSEBuffer = (buffer) => {
 };
 
 // Streaming via XMLHttpRequest — works on both React Native and Web
-const translateWithXHR = (url, japaneseText, onChunk, model, direction) => {
+const translateWithXHR = (url, japaneseText, onChunk, model, direction, formality) => {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', url);
@@ -69,13 +69,13 @@ const translateWithXHR = (url, japaneseText, onChunk, model, direction) => {
     };
 
     xhr.onerror = () => reject(new Error('Network error'));
-    xhr.send(JSON.stringify({ text: japaneseText, model, direction }));
+    xhr.send(JSON.stringify({ text: japaneseText, model, direction, formality }));
   });
 };
 
 // onChunk(text) is called with each streamed token.
 // Returns the parsed result object when streaming is complete.
-export const translateWithBreakdown = async (japaneseText, onChunk, model, direction) => {
+export const translateWithBreakdown = async (japaneseText, onChunk, model, direction, formality) => {
   try {
     const baseUrl = API_CONFIG.getBaseUrl();
     const apiUrl = `${baseUrl}${ENDPOINTS.TRANSLATE}`;
@@ -85,7 +85,7 @@ export const translateWithBreakdown = async (japaneseText, onChunk, model, direc
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-App-Key': APP_SECRET },
-        body: JSON.stringify({ text: japaneseText, model, direction }),
+        body: JSON.stringify({ text: japaneseText, model, direction, formality }),
       });
 
       if (!response.ok) {
@@ -110,7 +110,7 @@ export const translateWithBreakdown = async (japaneseText, onChunk, model, direc
     }
 
     // React Native — use XHR which supports partial responseText
-    return await translateWithXHR(apiUrl, japaneseText, onChunk, model, direction);
+    return await translateWithXHR(apiUrl, japaneseText, onChunk, model, direction, formality);
 
   } catch (error) {
     throw new Error('Translation failed. Please try again.');

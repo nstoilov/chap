@@ -1,14 +1,28 @@
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const OPENAI_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini'];
-const GOOGLE_MODELS = ['gemini-2.5-flash', 'gemini-2.5-pro'];
-const GROQ_MODELS = ['llama-3.3-70b-versatile'];
+const OPENAI_MODELS = [];
+const GOOGLE_MODELS = ['gemini-3.5-flash'];
+const GROQ_MODELS = ['meta-llama/llama-4-scout-17b-16e-instruct'];
 const ALLOWED_MODELS = [...OPENAI_MODELS, ...GOOGLE_MODELS, ...GROQ_MODELS];
 // Models that cost money — blocked server-side when ENABLE_PAID_MODELS env var is not 'true'
-const PAID_MODELS = ['gpt-4.1-mini', 'gpt-4o-mini', 'gemini-2.5-pro'];
+const PAID_MODELS = [];
 
 const SYSTEM_PROMPT = 'You are a Japanese language expert. Respond only with valid JSON. Be concise.';
+
+const isSingleWord = (text) => {
+  const trimmed = (text || '').trim();
+  if (!trimmed || trimmed.includes(' ')) return false;
+  if (/[。、！？….,!?;:]/.test(trimmed)) return false;
+  return trimmed.length <= 6;
+};
+
+const compoundInstruction = (text, direction) => {
+  if (!isSingleWord(text)) return '';
+  return direction === 'en-jp'
+    ? `\n- The input "${text}" is a single word. If its Japanese translation is a compound word (multiple kanji/components), break it into each component: include one breakdown entry per component with its reading and meaning, plus one entry for the full compound word with its overall meaning.`
+    : `\n- The input "${text}" is a single word. If it is a compound word (multiple kanji/components), break it into each component: include one breakdown entry per component with its reading and meaning, plus one entry for the full compound word with its overall meaning.`;
+};
 
 const buildPrompt = (text) => `Translate this Japanese text to English and break down each word. Be concise.
 
@@ -18,6 +32,7 @@ Rules for the breakdown:
 - Include only meaningful words (nouns, verbs, adjectives, adverbs, particles, conjunctions).
 - Do NOT include punctuation marks (。、！？…,，、· etc.) as breakdown items. If a token is punctuation only, skip it entirely.
 - "reading" must be hiragana only (e.g. たべる、わたし、は). Never use katakana or romaji for the reading of native Japanese words.
+${compoundInstruction(text, 'jp-en')}
 
 Respond in this exact JSON format:
 {
@@ -57,12 +72,17 @@ Now do the same for: "${text}"
 - "type": part of speech
 - Keep conjugated verbs together as one entry (e.g. 行きました as one word, not split into 行き + まし + た)
 - Skip punctuation marks
+${compoundInstruction(text, 'jp-en')}
 
 Respond with ONLY valid JSON, no other text.`;
 
-const buildEnToJpPrompt = (text) => `Translate this English text to Japanese. Provide a word breakdown with furigana readings.
+const buildEnToJpPrompt = (text, formality) => `Translate this English text to Japanese. Provide a word breakdown with furigana readings.
 
 English: "${text}"
+
+${formality === 'casual'
+  ? 'Use casual/plain form (だ / dictionary verb form, plain い-adjectives, じゃ instead of ではない where natural). Do NOT use です・ます.'
+  : 'Use polite form (です・ます form, polite い-adjectives, ではありません/じゃありません for negative).'}
 
 Rules for the breakdown:
 - Include only meaningful words (nouns, verbs, adjectives, adverbs, particles, conjunctions).
@@ -70,6 +90,7 @@ Rules for the breakdown:
 - Keep conjugated verbs together as one entry (e.g. 行きました as one word, not split into 行き + まし + た).
 - "reading" must be hiragana only (e.g. たべる、わたし、は). Never use katakana or romaji for the reading of native Japanese words.
 - "meaning" is the English meaning of that word.
+${compoundInstruction(text, 'en-jp')}
 
 Respond in this exact JSON format:
 {
@@ -85,9 +106,13 @@ Respond in this exact JSON format:
   "grammar": "Brief grammar notes"
 }`;
 
-const buildGroqEnToJpPrompt = (text) => `You are a Japanese translator. Translate the English text to Japanese, then break down the Japanese translation word by word.
+const buildGroqEnToJpPrompt = (text, formality) => `You are a Japanese translator. Translate the English text to Japanese, then break down the Japanese translation word by word.
 
 English: "${text}"
+
+${formality === 'casual'
+  ? 'Use casual/plain form (だ / dictionary verb form, plain い-adjectives, じゃ instead of ではない where natural). Do NOT use です・ます.'
+  : 'Use polite form (です・ます form, polite い-adjectives, ではありません/じゃありません for negative).'}
 
 Here is an example of correct output for English: "I like cats"
 {
@@ -109,6 +134,7 @@ Now do the same for: "${text}"
 - "meaning": English meaning of that Japanese word
 - "type": part of speech
 - Keep conjugated verbs together as one entry (e.g. 行きました as one word, not split into 行き + まし + た)
+${compoundInstruction(text, 'en-jp')}
 
 Respond with ONLY valid JSON, no other text.`;
 
@@ -138,7 +164,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { text, model: requestedModel, direction } = req.body;
+    const { text, model: requestedModel, direction, formality } = req.body;
 
     if (!text || typeof text !== 'string') {
       return res.status(400).json({ error: 'Invalid text parameter' });
@@ -149,7 +175,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Text too long' });
     }
 
-    const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'gemini-2.5-flash';
+    const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'gemini-3.5-flash';
 
     // Block paid models unless explicitly enabled via env var
     if (PAID_MODELS.includes(model) && process.env.ENABLE_PAID_MODELS !== 'true') {
@@ -158,7 +184,7 @@ export default async function handler(req, res) {
 
     const isGroq = GROQ_MODELS.includes(model);
     const prompt = direction === 'en-jp'
-      ? (isGroq ? buildGroqEnToJpPrompt(text) : buildEnToJpPrompt(text))
+      ? (isGroq ? buildGroqEnToJpPrompt(text, formality) : buildEnToJpPrompt(text, formality))
       : (isGroq ? buildGroqPrompt(text) : buildPrompt(text));
 
     // Set SSE headers so the client can read chunks as they arrive

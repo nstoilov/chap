@@ -1,10 +1,8 @@
 export const ENABLE_PAID_MODELS = false;
 
 export const MODELS = [
-  { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash', provider: 'google', paid: false },
-  { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', provider: 'groq', paid: false },
-  { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro', provider: 'google', paid: true },
-  { id: 'gpt-4.1-mini', label: 'GPT-4.1 Mini', provider: 'openai', paid: true },
+  { id: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash', provider: 'google', paid: false },
+  { id: 'meta-llama/llama-4-scout-17b-16e-instruct', label: 'Llama 4 Scout', provider: 'groq', paid: false },
 ];
 
-export const DEFAULT_MODEL = 'gemini-2.5-flash';
+export const DEFAULT_MODEL = 'gemini-3.5-flash';
