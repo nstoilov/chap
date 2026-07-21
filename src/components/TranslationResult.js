@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Card, Title, Paragraph, Button, ActivityIndicator } from 'react-native-paper';
+import { Card, Paragraph, Button, ActivityIndicator } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { favoritesService } from '../services/favoritesService';
 
 // Parse as much as possible from a partial/streaming JSON string
@@ -32,6 +33,7 @@ function parseStreamingResult(text) {
 
 export const TranslationResult = ({ result, originalText, onWordClick, onNewTranslation, isLoading, streamingText, direction }) => {
   const [favoriteStates, setFavoriteStates] = useState({});
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (result?.breakdown) {
@@ -71,6 +73,13 @@ export const TranslationResult = ({ result, originalText, onWordClick, onNewTran
     }));
   };
 
+  const handleCopyTranslation = async () => {
+    if (!result?.translation) return;
+    await Clipboard.setStringAsync(result.translation);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   if (!result && !streamingText) return null;
 
   // While streaming, parse partial JSON and show cards progressively
@@ -83,7 +92,7 @@ export const TranslationResult = ({ result, originalText, onWordClick, onNewTran
           <Card.Content>
             <View style={styles.streamingHeader}>
               <ActivityIndicator size="small" style={styles.streamingSpinner} />
-              <Title>Translation</Title>
+              <Text style={styles.sectionLabel}>Translation</Text>
             </View>
             {partial.translation ? (
               <Paragraph style={styles.translationText}>{partial.translation}</Paragraph>
@@ -97,7 +106,7 @@ export const TranslationResult = ({ result, originalText, onWordClick, onNewTran
         {partial.breakdown.length > 0 && (
           <Card style={styles.card}>
             <Card.Content>
-              <Title>Word Breakdown</Title>
+              <Text style={styles.sectionLabel}>Word Breakdown</Text>
               {partial.breakdown.map((item, index) => (
                 <View key={index} style={styles.breakdownItem}>
                   <View style={styles.wordClickArea}>
@@ -132,8 +141,7 @@ export const TranslationResult = ({ result, originalText, onWordClick, onNewTran
       {originalText && (
         <Card style={styles.card}>
           <Card.Content>
-
-        
+            <Text style={styles.sectionLabel}>Original Text</Text>
             <Paragraph style={styles.originalText}>
               {originalText}
             </Paragraph>
@@ -142,9 +150,16 @@ export const TranslationResult = ({ result, originalText, onWordClick, onNewTran
       )}
 
       {/* Translation Card */}
-      <Card style={styles.card}>
+      <Card style={styles.card} onPress={handleCopyTranslation} accessible>
         <Card.Content>
-          <Title>{direction === 'en-jp' ? 'Japanese Translation' : 'Translation'}</Title>
+          <View style={styles.translationHeader}>
+            <Text style={styles.sectionLabel}>{direction === 'en-jp' ? 'Japanese Translation' : 'Translation'}</Text>
+            {copied ? (
+              <Text style={styles.copiedHint}>Copied!</Text>
+            ) : (
+              <Ionicons name="copy-outline" size={18} color="#999" />
+            )}
+          </View>
           <Paragraph style={styles.translationText}>
             {result.translation}
           </Paragraph>
@@ -154,7 +169,7 @@ export const TranslationResult = ({ result, originalText, onWordClick, onNewTran
       {/* Breakdown Card */}
       <Card style={styles.card}>
         <Card.Content>
-          <Title>Word Breakdown</Title>
+          <Text style={styles.sectionLabel}>Word Breakdown</Text>
           {result.breakdown?.map((item, index) => {
             const favoriteKey = `${item.word}-${item.reading}`;
             const isFavorited = favoriteStates[favoriteKey];
@@ -209,7 +224,7 @@ export const TranslationResult = ({ result, originalText, onWordClick, onNewTran
       {result.grammar && (
         <Card style={styles.card}>
           <Card.Content>
-            <Title>Grammar Notes</Title>
+            <Text style={styles.sectionLabel}>Grammar Notes</Text>
             <Paragraph>{result.grammar}</Paragraph>
           </Card.Content>
         </Card>
@@ -223,7 +238,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   card: {
-    marginBottom: 15,
+    marginBottom: 36,
     elevation: 3,
   },
   originalText: {
@@ -254,6 +269,24 @@ const styles = StyleSheet.create({
     color: '#2E7D32',
     fontWeight: '500',
   },
+  sectionLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#757575',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  translationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  copiedHint: {
+    fontSize: 12,
+    color: '#2E7D32',
+    fontWeight: '600',
+  },
   furiganaText: {
     fontSize: 16,
     lineHeight: 28,
@@ -270,7 +303,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
     borderRadius: 8,
-    backgroundColor: '#F8F9FA',
   },
   wordClickArea: {
     flex: 1,

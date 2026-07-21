@@ -22,7 +22,7 @@ const parseSSEBuffer = (buffer) => {
     if (data.chunk) chunks.push(data.chunk);
     if (data.done) {
       try {
-        // Strip markdown code fences that some models (e.g. Gemini) wrap around JSON
+        // Strip markdown code fences that some models (e.g. Qwen) wrap around JSON
         const cleaned = data.full.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
         finalResult = JSON.parse(cleaned);
       } catch {

@@ -1,10 +1,8 @@
 import OpenAI from 'openai';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const OPENAI_MODELS = [];
-const GOOGLE_MODELS = ['gemini-3.5-flash'];
-const GROQ_MODELS = ['meta-llama/llama-4-scout-17b-16e-instruct'];
-const ALLOWED_MODELS = [...OPENAI_MODELS, ...GOOGLE_MODELS, ...GROQ_MODELS];
+const GROQ_MODELS = ['qwen/qwen3.6-27b', 'openai/gpt-oss-120b'];
+const ALLOWED_MODELS = [...OPENAI_MODELS, ...GROQ_MODELS];
 // Models that cost money — blocked server-side when ENABLE_PAID_MODELS env var is not 'true'
 const PAID_MODELS = [];
 
@@ -175,7 +173,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Text too long' });
     }
 
-    const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'gemini-3.5-flash';
+    const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'qwen/qwen3.6-27b';
 
     // Block paid models unless explicitly enabled via env var
     if (PAID_MODELS.includes(model) && process.env.ENABLE_PAID_MODELS !== 'true') {
@@ -194,31 +192,7 @@ export default async function handler(req, res) {
 
     let accumulated = '';
 
-    if (GOOGLE_MODELS.includes(model)) {
-      // --- Google Gemini ---
-      if (!process.env.GEMINI_API_KEY) {
-        res.write(`data: ${JSON.stringify({ error: 'Gemini API key not configured' })}\n\n`);
-        return res.end();
-      }
-
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const geminiModel = genAI.getGenerativeModel({
-        model,
-        systemInstruction: SYSTEM_PROMPT,
-        generationConfig: {
-          thinkingConfig: { thinkingBudget: 0 },
-        },
-      });
-      const streamResult = await geminiModel.generateContentStream(prompt);
-
-      for await (const chunk of streamResult.stream) {
-        const delta = chunk.text();
-        if (delta) {
-          accumulated += delta;
-          res.write(`data: ${JSON.stringify({ chunk: delta })}\n\n`);
-        }
-      }
-    } else if (GROQ_MODELS.includes(model)) {
+    if (GROQ_MODELS.includes(model)) {
       // --- Groq (OpenAI-compatible) ---
       if (!process.env.GROK_API_KEY) {
         res.write(`data: ${JSON.stringify({ error: 'Groq API key not configured' })}\n\n`);
@@ -226,16 +200,24 @@ export default async function handler(req, res) {
       }
 
       const groq = new OpenAI({ apiKey: process.env.GROK_API_KEY, baseURL: 'https://api.groq.com/openai/v1' });
-      const groqStream = await groq.chat.completions.create({
+      const groqBody = {
         model,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: prompt },
         ],
-        max_tokens: 800,
+        max_completion_tokens: 2048,
         temperature: 0.1,
         stream: true,
-      });
+      };
+      // Both models on Groq are reasoning models — configure reasoning behavior per model
+      if (model === 'qwen/qwen3.6-27b') {
+        groqBody.reasoning_effort = 'none';
+      } else if (model === 'openai/gpt-oss-120b') {
+        groqBody.reasoning_effort = 'low';
+        groqBody.include_reasoning = false;
+      }
+      const groqStream = await groq.chat.completions.create(groqBody);
 
       for await (const chunk of groqStream) {
         const delta = chunk.choices[0]?.delta?.content ?? '';
@@ -272,8 +254,10 @@ export default async function handler(req, res) {
       }
     }
 
+    // Safety net: strip any <think>...</think> reasoning blocks that leaked through
+    const cleaned = accumulated.replace(/<think>[\s\S]*?(<\/think>|$)/g, '').trim();
     // Send the fully accumulated text as the final event so the client can parse it
-    res.write(`data: ${JSON.stringify({ done: true, full: accumulated })}\n\n`);
+    res.write(`data: ${JSON.stringify({ done: true, full: cleaned })}\n\n`);
     res.end();
   } catch (error) {
     console.error('[translate]', error);

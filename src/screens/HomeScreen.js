@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { StyleSheet, ScrollView, View, Text, TouchableOpacity } from 'react-native';
-import { Appbar, Button } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Clipboard from 'expo-clipboard';
 
 import { TextInputSection } from '../components/TextInputSection';
 import { TranslationResult } from '../components/TranslationResult';
 import { QuickInputBar } from '../components/QuickInputBar';
+import { PasteButton } from '../components/PasteButton';
 import { ModelPicker } from '../components/ModelPicker';
 import { translateWithBreakdown } from '../services/openaiService';
 import { DEFAULT_MODEL } from '../config/models';
@@ -28,22 +30,17 @@ export const HomeScreen = () => {
   const scrollViewRef = useRef(null);
   const inputRef = useRef(null);
 
-  const focusTopInput = () => {
-    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
-    // Small delay to let scroll finish before focusing
-    setTimeout(() => inputRef.current?.focus(), 300);
-  };
 
-  const handleTranslate = async () => {
-    if (!text.trim()) return;
+  const translateText = async (textToTranslate) => {
+    if (!textToTranslate.trim()) return;
 
-    if (text.trim().length > MAX_INPUT_CHARS) {
+    if (textToTranslate.trim().length > MAX_INPUT_CHARS) {
       setError(`Text is too long. Please keep it under ${MAX_INPUT_CHARS} characters (2–3 sentences).`);
       return;
     }
 
     // Detect Japanese characters in input when direction is EN→JP
-    const hasJapanese = /[\u3000-\u9fff\uff00-\uffef]/.test(text);
+    const hasJapanese = /[\u3000-\u9fff\uff00-\uffef]/.test(textToTranslate);
     if (direction === 'en-jp' && hasJapanese) {
       setError('Japanese text detected. Switch to JP → EN mode to translate Japanese.');
       return;
@@ -59,10 +56,10 @@ export const HomeScreen = () => {
     setError('');
     setResult(null);
     setStreamingText('');
-    setOriginalText(text);
+    setOriginalText(textToTranslate);
 
     try {
-      const translationResult = await translateWithBreakdown(text, (chunk) => {
+      const translationResult = await translateWithBreakdown(textToTranslate, (chunk) => {
         setStreamingText(prev => prev + chunk);
       }, model, direction, direction === 'en-jp' ? formality : undefined);
       setResult(translationResult);
@@ -72,6 +69,16 @@ export const HomeScreen = () => {
       setError(err.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleTranslate = () => translateText(text);
+
+  const handlePaste = async () => {
+    const clipboardText = await Clipboard.getStringAsync();
+    if (clipboardText && clipboardText.trim()) {
+      setText(clipboardText);
+      translateText(clipboardText);
     }
   };
 
@@ -111,9 +118,9 @@ export const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Appbar.Header>
-        <Appbar.Content title="Japanese Translator" />
-      </Appbar.Header>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>🇯🇵 Japanese Translator 🇬🇧</Text>
+      </View>
 
       <View style={styles.toolbar}>
         <Button
@@ -172,7 +179,7 @@ export const HomeScreen = () => {
           maxChars={MAX_INPUT_CHARS}
           direction={direction}
         />
-        
+
         <TranslationResult 
           result={result} 
           originalText={originalText}
@@ -182,11 +189,9 @@ export const HomeScreen = () => {
           streamingText={streamingText}
           direction={direction}
         />
-
-        {result && !isLoading && (
-          <QuickInputBar onPress={focusTopInput} />
-        )}
       </ScrollView>
+
+      <PasteButton onPress={handlePaste} disabled={isLoading} />
     </SafeAreaView>
   );
 };
@@ -195,6 +200,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+    position: 'relative',
+  },
+  header: {
+    backgroundColor: '#fff',
+      
+    paddingTop: 24,
+    paddingBottom: 8,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '300',  
+    color: '#1A1A1A',
+    marginBottom: 16,
+    textAlign: 'center'
   },
   toolbar: {
     flexDirection: 'row',
