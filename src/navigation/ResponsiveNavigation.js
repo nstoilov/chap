@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { HomeScreen } from '../screens/HomeScreen';
 import { FavoritesScreen } from '../screens/FavoritesScreen';
 import { GameScreen } from '../screens/GameScreen';
+import { JlptScreen } from '../screens/JlptScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -20,6 +21,8 @@ const getIconName = (routeName, focused) => {
       return focused ? 'heart' : 'heart-outline';
     case 'Game':
       return focused ? 'game-controller' : 'game-controller-outline';
+    case 'JLPT':
+      return focused ? 'book' : 'book-outline';
     default:
       return 'home';
   }
@@ -35,6 +38,9 @@ const SidebarItem = ({ name, isActive, onPress }) => {
     }
     if (active && iconName === 'Game') {
       return '#000000'; // Black for game controller
+    }
+    if (active && iconName === 'JLPT') {
+      return '#00897B'; // Teal for JLPT
     }
     return active ? '#2196F3' : '#666';
   };
@@ -71,35 +77,60 @@ const Sidebar = ({ activeScreen, onScreenChange }) => (
         isActive={activeScreen === 'Game'}
         onPress={() => onScreenChange('Game')}
       />
+      <SidebarItem 
+        name="JLPT" 
+        isActive={activeScreen === 'JLPT'}
+        onPress={() => onScreenChange('JLPT')}
+      />
     </View>
   </View>
 );
 
+const SCREENS = {
+  Home: HomeScreen,
+  Favorites: FavoritesScreen,
+  Game: GameScreen,
+  JLPT: JlptScreen,
+};
+
 const DesktopLayout = () => {
   const [activeScreen, setActiveScreen] = useState('Home');
+  const [mountedScreens, setMountedScreens] = useState(['Home']);
 
-  const renderScreen = () => {
-    switch (activeScreen) {
-      case 'Home':
-        return <HomeScreen />;
-      case 'Favorites':
-        return <FavoritesScreen />;
-      case 'Game':
-        return <GameScreen />;
-      default:
-        return <HomeScreen />;
-    }
+  const handleScreenChange = (name) => {
+    setActiveScreen(name);
+    setMountedScreens((prev) =>
+      prev.includes(name) ? prev : [...prev, name]
+    );
   };
+
+  // Keep every visited screen mounted and hide inactive ones,
+  // so switching tabs doesn't lose in-progress state
+  const renderScreens = () =>
+    mountedScreens.map((name) => {
+      const Screen = SCREENS[name];
+      return (
+        <View
+          key={name}
+          style={[
+            styles.screenContainer,
+            activeScreen !== name && styles.screenHidden,
+          ]}
+        >
+          <Screen />
+        </View>
+      );
+    });
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.contentWrapper}>
-          {renderScreen()}
+          {renderScreens()}
         </View>
       </View>
       <View style={styles.sidebarContainer}>
-        <Sidebar activeScreen={activeScreen} onScreenChange={setActiveScreen} />
+        <Sidebar activeScreen={activeScreen} onScreenChange={handleScreenChange} />
       </View>
     </View>
   );
@@ -119,6 +150,8 @@ const MobileNavigator = () => (
           iconColor = '#E91E63'; // Red for heart
         } else if (focused && route.name === 'Game') {
           iconColor = '#000000'; // Black for game controller
+        } else if (focused && route.name === 'JLPT') {
+          iconColor = '#00897B'; // Teal for JLPT
         } else if (focused) {
           iconColor = '#2196F3';
         }
@@ -134,6 +167,7 @@ const MobileNavigator = () => (
     <Tab.Screen name="Home" component={HomeScreen} />
     <Tab.Screen name="Favorites" component={FavoritesScreen} />
     <Tab.Screen name="Game" component={GameScreen} />
+    <Tab.Screen name="JLPT" component={JlptScreen} />
   </Tab.Navigator>
 );
 
@@ -168,7 +202,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 20,
     top: '50%',
-    transform: [{ translateY: -90 }], // Adjust based on sidebar height
+    transform: [{ translateY: -120 }], // Adjust for 4 sidebar items
     zIndex: 1000,
   },
   sidebar: {
@@ -218,5 +252,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 8,
+  },
+  screenContainer: {
+    flex: 1,
+  },
+  screenHidden: {
+    display: 'none',
   },
 });

@@ -11,7 +11,8 @@
     "build": "expo export --platform web --output-dir dist",
     "electron": "npm run build:web && node electron/fix-paths.js && npx electron electron/main.js",
     "electron:dev": "electron electron/main.js",
-    "dist:mac": "npm run build:web && electron-builder --mac"
+    "dist:mac": "npm run build:web && electron-builder --mac",
+    "validate:grammar": "node scripts/validateGrammarData.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",

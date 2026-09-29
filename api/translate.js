@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 
 const OPENAI_MODELS = [];
-const GROQ_MODELS = ['qwen/qwen3.6-27b', 'openai/gpt-oss-120b'];
+const GROQ_MODELS = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b'];
 const ALLOWED_MODELS = [...OPENAI_MODELS, ...GROQ_MODELS];
 // Models that cost money — blocked server-side when ENABLE_PAID_MODELS env var is not 'true'
 const PAID_MODELS = [];
@@ -173,7 +173,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Text too long' });
     }
 
-    const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'qwen/qwen3.6-27b';
+    const model = ALLOWED_MODELS.includes(requestedModel) ? requestedModel : 'qwen/qwen3.8-27b';
 
     // Block paid models unless explicitly enabled via env var
     if (PAID_MODELS.includes(model) && process.env.ENABLE_PAID_MODELS !== 'true') {
@@ -211,7 +211,7 @@ export default async function handler(req, res) {
         stream: true,
       };
       // Both models on Groq are reasoning models — configure reasoning behavior per model
-      if (model === 'qwen/qwen3.6-27b') {
+      if (model === 'qwen/qwen3.8-27b') {
         groqBody.reasoning_effort = 'none';
       } else if (model === 'openai/gpt-oss-120b') {
         groqBody.reasoning_effort = 'low';

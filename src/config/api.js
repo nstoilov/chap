@@ -25,5 +25,6 @@ export const API_CONFIG = {
 };
 
 export const ENDPOINTS = {
-  TRANSLATE: '/api/translate'
+  TRANSLATE: '/api/translate',
+  JLPT: '/api/jlpt'
 };

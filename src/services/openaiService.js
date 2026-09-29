@@ -1,40 +1,12 @@
 import { API_CONFIG, ENDPOINTS, APP_SECRET } from '../config/api';
+import { isStreamingSupported, parseSSEBuffer } from './sse';
 
-const isStreamingSupported = () => {
-  try {
-    return typeof Response !== 'undefined' && typeof new Response().body?.getReader === 'function';
-  } catch {
-    return false;
-  }
-};
+const translateFallback = (full) => ({
+  translation: full,
+  breakdown: [],
+  grammar: 'Unable to parse structured response',
+});
 
-// Parse SSE lines from a text buffer, returns { chunks, finalResult, remaining }
-const parseSSEBuffer = (buffer) => {
-  const lines = buffer.split('\n');
-  const remaining = lines.pop(); // keep incomplete last line
-  const chunks = [];
-  let finalResult = null;
-
-  for (const line of lines) {
-    if (!line.startsWith('data: ')) continue;
-    const data = JSON.parse(line.slice(6));
-    if (data.error) throw new Error(data.error);
-    if (data.chunk) chunks.push(data.chunk);
-    if (data.done) {
-      try {
-        // Strip markdown code fences that some models (e.g. Qwen) wrap around JSON
-        const cleaned = data.full.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
-        finalResult = JSON.parse(cleaned);
-      } catch {
-        finalResult = { translation: data.full, breakdown: [], grammar: 'Unable to parse structured response' };
-      }
-    }
-  }
-
-  return { chunks, finalResult, remaining };
-};
-
-// Streaming via XMLHttpRequest — works on both React Native and Web
 const translateWithXHR = (url, japaneseText, onChunk, model, direction, formality) => {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -47,7 +19,6 @@ const translateWithXHR = (url, japaneseText, onChunk, model, direction, formalit
     xhr.onreadystatechange = () => {
       if (xhr.readyState < 3) return;
 
-      // Handle HTTP error responses (e.g. 401, 403) before any SSE parsing
       if (xhr.readyState === 4 && xhr.status !== 200) {
         reject(new Error(`Server error (${xhr.status})`));
         return;
@@ -57,7 +28,7 @@ const translateWithXHR = (url, japaneseText, onChunk, model, direction, formalit
       if (!newText) return;
 
       try {
-        const { chunks, finalResult, remaining } = parseSSEBuffer(newText);
+        const { chunks, finalResult, remaining } = parseSSEBuffer(newText, translateFallback);
         processed = xhr.responseText.length - remaining.length;
 
         chunks.forEach(c => onChunk?.(c));
@@ -73,14 +44,11 @@ const translateWithXHR = (url, japaneseText, onChunk, model, direction, formalit
   });
 };
 
-// onChunk(text) is called with each streamed token.
-// Returns the parsed result object when streaming is complete.
 export const translateWithBreakdown = async (japaneseText, onChunk, model, direction, formality) => {
   try {
     const baseUrl = API_CONFIG.getBaseUrl();
     const apiUrl = `${baseUrl}${ENDPOINTS.TRANSLATE}`;
 
-    // Web Streams API available (browser / Electron)
     if (isStreamingSupported()) {
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -101,7 +69,7 @@ export const translateWithBreakdown = async (japaneseText, onChunk, model, direc
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
-        const { chunks, finalResult, remaining } = parseSSEBuffer(buffer);
+        const { chunks, finalResult, remaining } = parseSSEBuffer(buffer, translateFallback);
         buffer = remaining;
 
         chunks.forEach(c => onChunk?.(c));
@@ -109,9 +77,7 @@ export const translateWithBreakdown = async (japaneseText, onChunk, model, direc
       }
     }
 
-    // React Native — use XHR which supports partial responseText
     return await translateWithXHR(apiUrl, japaneseText, onChunk, model, direction, formality);
-
   } catch (error) {
     throw new Error('Translation failed. Please try again.');
   }

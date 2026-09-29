@@ -1,0 +1,662 @@
+export default [
+  {
+    "phrase": "間（あいだ）",
+    "meaning": "while; during; between ~",
+    "example": "私は夏休みの間、日本語を勉強しました。"
+  },
+  {
+    "phrase": "間に（あいだに）",
+    "meaning": "while; during~ something happened",
+    "example": "寝ている間に、雨が降りました。"
+  },
+  {
+    "phrase": "あまり～ない",
+    "meaning": "not very, not much ~",
+    "example": "私はあまり肉を食べません。"
+  },
+  {
+    "phrase": "後で（あとで）",
+    "meaning": "after~; later",
+    "example": "ご飯を食べた後で、薬を飲んでください。"
+  },
+  {
+    "phrase": "ば",
+    "meaning": "conditional form; If [A] then [B]",
+    "example": "雨が降れば、家にいます。"
+  },
+  {
+    "phrase": "場合は（ばあいは）",
+    "meaning": "in the event of; in the case that ~",
+    "example": "地震の場合は、机の下に隠れてください。"
+  },
+  {
+    "phrase": "ばかり",
+    "meaning": "only; nothing but ~",
+    "example": "彼は甘いものばかり食べています。"
+  },
+  {
+    "phrase": "だけで",
+    "meaning": "just by; just by doing",
+    "example": "考えるだけで嬉しくなります。"
+  },
+  {
+    "phrase": "出す（だす）",
+    "meaning": "to begin to; to start to; to burst into; ... out (e.g. to jump out, to carry out)​",
+    "example": "突然、子供が泣き出しました。"
+  },
+  {
+    "phrase": "でございます",
+    "meaning": "to be (honorific)",
+    "example": "こちらは田中でございます。"
+  },
+  {
+    "phrase": "でも",
+    "meaning": "... or something; how about~",
+    "example": "お茶でも飲みませんか。"
+  },
+  {
+    "phrase": "ではないか",
+    "meaning": "right?; isn't it?",
+    "example": "今日はいい天気ではないか。"
+  },
+  {
+    "phrase": "が必要（がひつよう）",
+    "meaning": "need; necessary",
+    "example": "日本語を勉強するのに辞書が必要です。"
+  },
+  {
+    "phrase": "がする",
+    "meaning": "to smell; hear; taste",
+    "example": "キッチンからいい匂いがします。"
+  },
+  {
+    "phrase": "がり",
+    "meaning": "personality (someone tends to; has a tendency to; has a sensitivity to ~)",
+    "example": "彼は寒がりです。"
+  },
+  {
+    "phrase": "がる / がっている",
+    "meaning": "to show signs of; to appear; to feel, to think ~",
+    "example": "彼は行きたがっています。"
+  },
+  {
+    "phrase": "ございます",
+    "meaning": "to be, to exist (the polite form of いる/ある)",
+    "example": "ここに本がございます。"
+  },
+  {
+    "phrase": "始める（はじめる）",
+    "meaning": "to start; to begin to ~",
+    "example": "私は毎朝6時に仕事を始めます。"
+  },
+  {
+    "phrase": "はずだ",
+    "meaning": "it must be; it should be (expectation)",
+    "example": "彼はもうすぐ着くはずです。"
+  },
+  {
+    "phrase": "はずがない",
+    "meaning": "cannot be (impossible)",
+    "example": "彼が嘘をつくはずがありません。"
+  },
+  {
+    "phrase": "必要がある（ひつようがある）",
+    "meaning": "need to; it is necessary to",
+    "example": "明日早く起きる必要があります。"
+  },
+  {
+    "phrase": "意向形（いこうけい）",
+    "meaning": "volitional form​; let's do ~",
+    "example": "「行こう」は意向形です。"
+  },
+  {
+    "phrase": "いらっしゃる",
+    "meaning": "to be; to come; to go (polite version)",
+    "example": "先生はもういらっしゃいました。"
+  },
+  {
+    "phrase": "いたします",
+    "meaning": "to do (polite form of する)",
+    "example": "私がご案内いたします。"
+  },
+  {
+    "phrase": "じゃないか",
+    "meaning": "right? isn't it? let's~; confirmation",
+    "example": "この映画、面白いじゃないか。"
+  },
+  {
+    "phrase": "かどうか",
+    "meaning": "whether or not ~",
+    "example": "明日雨が降るかどうかわかりません。"
+  },
+  {
+    "phrase": "かしら",
+    "meaning": "I wonder (feminine)",
+    "example": "彼、もう着いたかしら。"
+  },
+  {
+    "phrase": "かい",
+    "meaning": "turns a sentence into a yes/no question",
+    "example": "君も行くかい？"
+  },
+  {
+    "phrase": "かもしれない",
+    "meaning": "might; perhaps; indicates possibility",
+    "example": "明日は雨が降るかもしれません。"
+  },
+  {
+    "phrase": "かな",
+    "meaning": "I wonder; should I?",
+    "example": "どっちにしようかな。"
+  },
+  {
+    "phrase": "から作る（からつくる）",
+    "meaning": "made from; made with",
+    "example": "このワインはぶどうから作られています。"
+  },
+  {
+    "phrase": "きっと",
+    "meaning": "surely; undoubtedly; almost certainly; most likely",
+    "example": "彼はきっと成功するでしょう。"
+  },
+  {
+    "phrase": "頃（ころ / ごろ）",
+    "meaning": "around; about; when",
+    "example": "私は毎晩11時ごろ寝ます。"
+  },
+  {
+    "phrase": "こと",
+    "meaning": "Verb nominalizer",
+    "example": "日本へ行くことが夢です。"
+  },
+  {
+    "phrase": "ことがある",
+    "meaning": "there are times when",
+    "example": "電車で寝過ごすことがあります。"
+  },
+  {
+    "phrase": "ことができる",
+    "meaning": "can; able to",
+    "example": "私は日本語を話すことができます。"
+  },
+  {
+    "phrase": "ことになる",
+    "meaning": "It has been decided that..; it turns out that..",
+    "example": "来月、大阪へ転勤することになりました。"
+  },
+  {
+    "phrase": "ことにする",
+    "meaning": "to decide on",
+    "example": "毎日運動することにしました。"
+  },
+  {
+    "phrase": "くする",
+    "meaning": "to make something ~",
+    "example": "テレビの音を小さくしてください。"
+  },
+  {
+    "phrase": "急に（きゅうに）",
+    "meaning": "quickly; immediately; hastily; suddenly; abruptly; unexpectedly ~",
+    "example": "急に雨が降ってきました。"
+  },
+  {
+    "phrase": "までに",
+    "meaning": "by; by the time; indicates time limit",
+    "example": "金曜日までにレポートを出してください。"
+  },
+  {
+    "phrase": "まま",
+    "meaning": "as it is; current state; without changing",
+    "example": "テレビをつけたまま寝てしまいました。"
+  },
+  {
+    "phrase": "または",
+    "meaning": "both; or; otherwise​; choice between [A] or [B]",
+    "example": "電話またはメールでご連絡ください。"
+  },
+  {
+    "phrase": "みたいだ",
+    "meaning": "like; similar to; resembling ~",
+    "example": "彼は子供みたいですね。"
+  },
+  {
+    "phrase": "みたいな",
+    "meaning": "like, similar to ~",
+    "example": "私みたいな人は珍しいです。"
+  },
+  {
+    "phrase": "みたいに",
+    "meaning": "like; similar to ~",
+    "example": "彼はプロみたいにピアノを弾きます。"
+  },
+  {
+    "phrase": "も",
+    "meaning": "as many as; as much as; up to; nearly ~",
+    "example": "このかばんは3万円もしました。"
+  },
+  {
+    "phrase": "な",
+    "meaning": "don’t ~ (order somebody to not do something)",
+    "example": "心配するな。"
+  },
+  {
+    "phrase": "など",
+    "meaning": "such as; things like ~",
+    "example": "机の上に本やノートなどがあります。"
+  },
+  {
+    "phrase": "ながら",
+    "meaning": "while; during; as; simultaneously",
+    "example": "音楽を聞きながら勉強しています。"
+  },
+  {
+    "phrase": "なかなか～ない",
+    "meaning": "not easy to; struggling to; not able to ~",
+    "example": "日本語の漢字はなかなか覚えられません。"
+  },
+  {
+    "phrase": "なければいけない",
+    "meaning": "must do something; have to do something",
+    "example": "もう行かなければいけません。"
+  },
+  {
+    "phrase": "なければならない",
+    "meaning": "must do something; have to do something",
+    "example": "学生は勉強しなければならない。"
+  },
+  {
+    "phrase": "なら",
+    "meaning": "if; in the case that ~",
+    "example": "雨なら、試合は中止します。"
+  },
+  {
+    "phrase": "なさい",
+    "meaning": "do this (soft/firm command)",
+    "example": "早く寝なさい。"
+  },
+  {
+    "phrase": "なさる",
+    "meaning": "to do (honorific)",
+    "example": "先生は何をなさいますか。"
+  },
+  {
+    "phrase": "に気がつく（にきがつく）",
+    "meaning": "to notice; to realize",
+    "example": "彼の嘘に気がつきました。"
+  },
+  {
+    "phrase": "に見える（にみえる）",
+    "meaning": "to look; to seem; to appear",
+    "example": "彼は医者に見えます。"
+  },
+  {
+    "phrase": "にする",
+    "meaning": "to make something ~",
+    "example": "コーヒーにします。"
+  },
+  {
+    "phrase": "にくい",
+    "meaning": "difficult to do ~",
+    "example": "この字は読みにくいです。"
+  },
+  {
+    "phrase": "の中で（のなかで）",
+    "meaning": "in; among ~",
+    "example": "スポーツの中でサッカーが一番好きです。"
+  },
+  {
+    "phrase": "のに",
+    "meaning": "although, in spite of, even though ~",
+    "example": "雨が降っているのに、出かけました。"
+  },
+  {
+    "phrase": "のに",
+    "meaning": "to (do something); in order to ~",
+    "example": "日本語を勉強するのに辞書がいります。"
+  },
+  {
+    "phrase": "のは〜だ",
+    "meaning": "[A] is [B]; the reason for [A] is [B]",
+    "example": "彼が遅刻したのは電車が遅れたからです。"
+  },
+  {
+    "phrase": "お～ください",
+    "meaning": "please do ~ (honorific)",
+    "example": "こちらにお座りください。"
+  },
+  {
+    "phrase": "お～になる",
+    "meaning": "to do (honorific)",
+    "example": "先生はもうお帰りになりました。"
+  },
+  {
+    "phrase": "おきに",
+    "meaning": "repeated at intervals, every ~",
+    "example": "2時間おきに薬を飲んでください。"
+  },
+  {
+    "phrase": "終わる（おわる）",
+    "meaning": "to finish; to end~",
+    "example": "授業が終わりました。"
+  },
+  {
+    "phrase": "られる",
+    "meaning": "potential form; ability or inability to do something",
+    "example": "私は納豆が食べられます。"
+  },
+  {
+    "phrase": "らしい",
+    "meaning": "it seems like; I heard; apparently ~",
+    "example": "彼は来月帰るらしいです。"
+  },
+  {
+    "phrase": "さ",
+    "meaning": "-ness​ ; nominalizer for adjective",
+    "example": "この部屋の広さはどれくらいですか。"
+  },
+  {
+    "phrase": "さっき",
+    "meaning": "some time ago; just now",
+    "example": "さっき、彼に会いました。"
+  },
+  {
+    "phrase": "させられる",
+    "meaning": "causative-passive; to be made to do something",
+    "example": "母に野菜を食べさせられました。"
+  },
+  {
+    "phrase": "させる",
+    "meaning": "causative form; to make/let somebody do something",
+    "example": "母は子供に部屋を掃除させました。"
+  },
+  {
+    "phrase": "させてください",
+    "meaning": "please let me do",
+    "example": "私に説明させてください。"
+  },
+  {
+    "phrase": "さすが",
+    "meaning": "as one would expect; as is to be expected; even ~",
+    "example": "さすがプロですね。"
+  },
+  {
+    "phrase": "し",
+    "meaning": "and; and what’s more ~ (emphasis)",
+    "example": "彼は頭もいいし、スポーツもできます。"
+  },
+  {
+    "phrase": "そんなに",
+    "meaning": "so much; so; like that",
+    "example": "そんなに急がないでください。"
+  },
+  {
+    "phrase": "それでも",
+    "meaning": "but still; and yet; even so ~",
+    "example": "それでも、私は行きたいです。"
+  },
+  {
+    "phrase": "それに",
+    "meaning": "besides; in addition; also; moreover ~",
+    "example": "それに、時間もかかります。"
+  },
+  {
+    "phrase": "そうだ",
+    "meaning": "I heard that; it is said that ~",
+    "example": "天気予報によると、明日は晴れるそうです。"
+  },
+  {
+    "phrase": "そうだ",
+    "meaning": "looks like; appears like; seeming ~",
+    "example": "このケーキは美味しそうですね。"
+  },
+  {
+    "phrase": "そうに / そうな",
+    "meaning": "seems like; looks like ~",
+    "example": "雨が降りそうな空模様です。"
+  },
+  {
+    "phrase": "たばかり",
+    "meaning": "just finished; something just occurred",
+    "example": "私は今着いたばかりです。"
+  },
+  {
+    "phrase": "たところ",
+    "meaning": "just finished doing, was just doing",
+    "example": "今、ご飯を食べたところです。"
+  },
+  {
+    "phrase": "他動詞 & 自動詞（たどうし & じどうし）",
+    "meaning": "Transitive & Intransitive Verbs",
+    "example": "「開ける」は他動詞で、「開く」は自動詞です。"
+  },
+  {
+    "phrase": "たがる",
+    "meaning": "wants to do ~ (third person)",
+    "example": "彼は日本へ行きたがっています。"
+  },
+  {
+    "phrase": "たら",
+    "meaning": "if; after; when ~",
+    "example": "雨が降ったら、中止します。"
+  },
+  {
+    "phrase": "たらどう",
+    "meaning": "why don't you; how about ~ (used to give advice)",
+    "example": "専門家に相談したらどうですか。"
+  },
+  {
+    "phrase": "たらいいですか",
+    "meaning": "what should I do?; speaker seeking instructions from listener",
+    "example": "どうしたらいいですか。"
+  },
+  {
+    "phrase": "て / で",
+    "meaning": "conjunctive particle; so; because of [A], [B]...",
+    "example": "寒くて、風邪をひきました。"
+  },
+  {
+    "phrase": "てあげる",
+    "meaning": "to do for; to do a favor",
+    "example": "私は友達に本を貸してあげました。"
+  },
+  {
+    "phrase": "てほしい",
+    "meaning": "I want you to; need you to ~",
+    "example": "私に言ってほしいです。"
+  },
+  {
+    "phrase": "ていく",
+    "meaning": "to start; to continue; to go on",
+    "example": "これからも勉強を続けていきます。"
+  },
+  {
+    "phrase": "ていた",
+    "meaning": "was doing something (past continuous)",
+    "example": "昨日の夜、私は映画を見ていた。"
+  },
+  {
+    "phrase": "ていただけませんか",
+    "meaning": "could you please ~",
+    "example": "少し待っていただけませんか。"
+  },
+  {
+    "phrase": "てくれる",
+    "meaning": "to do a favor; do something for someone",
+    "example": "友達が私に本を貸してくれました。"
+  },
+  {
+    "phrase": "てくる",
+    "meaning": "to do… and come back; to become; to continue; to start ~",
+    "example": "少しずつ春が近づいてきました。"
+  },
+  {
+    "phrase": "てみる",
+    "meaning": "try doing",
+    "example": "この料理を食べてみてください。"
+  },
+  {
+    "phrase": "てもらう",
+    "meaning": "to get somebody to do something",
+    "example": "私は友達に写真を撮ってもらいました。"
+  },
+  {
+    "phrase": "ておく",
+    "meaning": "to do something in advance",
+    "example": "先に会場を予約しておきます。"
+  },
+  {
+    "phrase": "てしまう / ちゃう",
+    "meaning": "to do something by accident, to finish completely",
+    "example": "電車の中に傘を忘れてしまいました。"
+  },
+  {
+    "phrase": "てすみません",
+    "meaning": "I’m sorry for",
+    "example": "遅れてすみません。"
+  },
+  {
+    "phrase": "てやる",
+    "meaning": "to do for; to do a favor (casual)",
+    "example": "私は弟に本を読んでやりました。"
+  },
+  {
+    "phrase": "てよかった",
+    "meaning": "I’m glad that ~",
+    "example": "傘を持ってきてよかったです。"
+  },
+  {
+    "phrase": "ているところ",
+    "meaning": "in the process of doing",
+    "example": "今、レポートを書いているところです。"
+  },
+  {
+    "phrase": "ても",
+    "meaning": "even; even if; even though ~",
+    "example": "雨が降っても行きます。"
+  },
+  {
+    "phrase": "と",
+    "meaning": "whenever [A] happens, [B] also happens",
+    "example": "春になると、桜が咲きます。"
+  },
+  {
+    "phrase": "と言ってもいい（といってもいい）",
+    "meaning": "you could say; one might say; I'd say ~",
+    "example": "彼は天才と言ってもいいでしょう。"
+  },
+  {
+    "phrase": "という",
+    "meaning": "called; named; that ~",
+    "example": "田中という人に会いました。"
+  },
+  {
+    "phrase": "ということ",
+    "meaning": "convert phrase into noun",
+    "example": "彼が来ないということです。"
+  },
+  {
+    "phrase": "と言われている（といわれている）",
+    "meaning": "it is said that ~",
+    "example": "この寺は700年前に建てられたと言われています。"
+  },
+  {
+    "phrase": "と聞いた（ときいた）",
+    "meaning": "I heard...",
+    "example": "昨日、彼が来月引っ越すと聞いた。"
+  },
+  {
+    "phrase": "と思う（とおもう）",
+    "meaning": "to think…; I think…; you think…",
+    "example": "私はこの計画はいいと思います。"
+  },
+  {
+    "phrase": "とか～とか",
+    "meaning": "among other things; such as; like ~",
+    "example": "机の上に本とかノートとかがあります。"
+  },
+  {
+    "phrase": "ところ",
+    "meaning": "just about to; on the verge of doing something",
+    "example": "今、出かけるところです。"
+  },
+  {
+    "phrase": "続ける（つづける）",
+    "meaning": "continue to; keen on ~",
+    "example": "彼は3時間も走り続けました。"
+  },
+  {
+    "phrase": "って",
+    "meaning": "named; called ~",
+    "example": "田中って人に会いました。"
+  },
+  {
+    "phrase": "受身形（うけみけい）",
+    "meaning": "passive form; passive voice",
+    "example": "「褒められる」は受身形です。"
+  },
+  {
+    "phrase": "は〜が… は",
+    "meaning": "[A] but [B]; however; comparison",
+    "example": "日本語は話せますが、漢字は読めません。"
+  },
+  {
+    "phrase": "やすい",
+    "meaning": "easy to; likely to; prone to; have a tendency to ~",
+    "example": "この本は分かりやすいです。"
+  },
+  {
+    "phrase": "やっと",
+    "meaning": "at last; finally; barely; narrowly ~",
+    "example": "やっと終わりました。"
+  },
+  {
+    "phrase": "より",
+    "meaning": "than; rather than; more than ~",
+    "example": "夏は冬より暑いです。"
+  },
+  {
+    "phrase": "予定だ（よていだ）",
+    "meaning": "plan to, intend to",
+    "example": "私は来月日本へ行く予定です。"
+  },
+  {
+    "phrase": "ようだ",
+    "meaning": "appears; seems; looks as if ~",
+    "example": "彼はもう帰ったようです。"
+  },
+  {
+    "phrase": "ように / ような",
+    "meaning": "like; as; similar to ~",
+    "example": "彼のように上手に話したいです。"
+  },
+  {
+    "phrase": "ようになる",
+    "meaning": "to reach the point that; to come to be that; to turn into ~",
+    "example": "日本語が少しずつ話せるようになりました。"
+  },
+  {
+    "phrase": "ようにする",
+    "meaning": "to try to; to make sure that ~",
+    "example": "毎日運動するようにしています。"
+  },
+  {
+    "phrase": "ようと思う（ようとおもう）",
+    "meaning": "thinking of doing; planning to ~",
+    "example": "来年、留学しようと思います。"
+  },
+  {
+    "phrase": "ぜひ",
+    "meaning": "by all means; certainly; definitely ~",
+    "example": "ぜひ日本へ行きたいです。"
+  },
+  {
+    "phrase": "全然～ない（ぜんぜん～ない）",
+    "meaning": "(not) at all",
+    "example": "私は全然分かりません。"
+  },
+  {
+    "phrase": "づらい",
+    "meaning": "difficult to do ~",
+    "example": "この靴は歩きづらいです。"
+  }
+];
